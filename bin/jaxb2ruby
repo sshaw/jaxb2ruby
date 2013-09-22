@@ -7,6 +7,12 @@ require "find"
 require "fileutils"
 require "java"
 
+TEMPLATES = Hash[ 
+  Dir[File.expand_path(File.dirname(__FILE__)) << "/../lib/templates/*.erb"].map do |path| 
+    [File.basename(path, ".erb"), path] 
+  end
+]
+
 # Not a JRuby way to do this..?
 TYPEMAP = {
   "boolean" => :boolean,
@@ -269,10 +275,13 @@ def extract_classes(java_classes)
 end
 
 def save_classes(classes)
-  # Just do this once!  
-  ERB.new(File.read("roxml.erb"), nil, "<>%-").def_method(Template, "render(klass)")
-  t = Template.new
   outdir = "out/"
+  template = TEMPLATES["roxml"]
+
+  # Just do this once!
+  ERB.new(File.read(template), nil, "<>%-").def_method(Template, "render(klass)")
+  t = Template.new
+
   classes.each do |klass|
     puts "Generating: #{klass.path}"
     FileUtils.mkdir_p(outdir + klass.directory)
