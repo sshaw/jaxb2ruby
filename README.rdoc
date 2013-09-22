@@ -1,0 +1,9 @@
+= jaxb2ruby
+
+Generate XML object mappings from a schema using JAXB
+
+<b>DO NOT USE, WORK IN PROGRESS</b>
+
+=== Overview
+
+  jaxb2ruby [OPTIONS] schema
