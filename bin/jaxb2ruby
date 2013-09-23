@@ -139,8 +139,9 @@ class RubyClass
       req = []
       (element.children + element.attributes).each do |node| 
         # Only select types that look like a module
-        next unless node.type.is_a?(String) and node.type.index("::")
-        req << node.type.split("::").map { |mod| mod.underscore }.join("/") 
+        if node.type.is_a?(String) and node.type.include?("::")
+          req << node.type.split("::").map { |mod| mod.underscore }.join("/") 
+        end
       end
       req.sort
     end
