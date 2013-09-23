@@ -18,6 +18,7 @@ TYPEMAP = {
   "boolean" => :boolean,
   "java.lang.Boolean" => :boolean,
   "java.lang.String" => "String",
+  "java.lang.Integer" => "Integer",
   "java.math.BigDecimal" => "Integer",
   "java.math.BigInteger" => "Integer",
   "javax.xml.datatype.Duration" => "String",
