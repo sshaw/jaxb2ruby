@@ -7,9 +7,9 @@ require "find"
 require "fileutils"
 require "java"
 
-TEMPLATES = Hash[ 
-  Dir[File.expand_path(File.dirname(__FILE__)) << "/../lib/templates/*.erb"].map do |path| 
-    [File.basename(path, ".erb"), path] 
+TEMPLATES = Hash[
+  Dir[File.expand_path(File.dirname(__FILE__)) << "/../lib/templates/*.erb"].map do |path|
+    [File.basename(path, ".erb"), path]
   end
 ]
 
@@ -47,32 +47,15 @@ class Node
     @accessor = name.underscore
     @namespace = options[:namespace]
     @type = options[:type]
+
     @required = !!options[:required]
+    @array = !!options[:array]
+    @text = !!options[:text]
 
     if @type == :boolean && @accessor.start_with?("is_")
       @accessor["is_"] = ""
       @accessor << "?"
     end
-  end
-
-  def required?
-    @required
-  end
-end
-
-class Attribute < Node; end
-
-class Element < Node
-  attr :children
-  attr :attributes
-
-  def initialize(name, options = {})
-    super
-
-    @array = !!options[:array]
-    @text = !!options[:text]
-    @children = options[:children] || []
-    @attributes = options[:attributes] || []
 
     # Uhhhh, I think this might need some revisiting, esp. with xsd:enumeration
     if @type.is_a?(Array)
@@ -87,6 +70,10 @@ class Element < Node
     end
   end
 
+  def required?
+    @required
+  end
+
   def text?
     @text
   end
@@ -97,6 +84,20 @@ class Element < Node
 
   def array?
     @array
+  end
+end
+
+# These should have types
+class Attribute < Node; end
+
+class Element < Node
+  attr :children
+  attr :attributes
+
+  def initialize(name, options = {})
+    super
+    @children = options[:children] || []
+    @attributes = options[:attributes] || []
   end
 end
 
@@ -129,19 +130,19 @@ class RubyClass
   def directory
     File.dirname(path)
   end
-  
+
   def path
     @path ||= @module.to_a.push(filename).map { |mod| mod.underscore }.join("/")
   end
 
   # Bit of a last second hack here :(
-  def requires        
+  def requires
     @requires ||= begin
       req = []
-      (element.children + element.attributes).each do |node| 
+      (element.children + element.attributes).each do |node|
         # Only select types that look like a module
         if node.type.is_a?(String) and node.type.include?("::")
-          req << node.type.split("::").map { |mod| mod.underscore }.join("/") 
+          req << node.type.split("::").map { |mod| mod.underscore }.join("/")
         end
       end
       req.sort
@@ -154,12 +155,14 @@ def mapns(ns)
   mapping = {
     "http://ddex.net/xml/ern/341" => "DDEX::ERN::V341",
     "http://ddex.net/xml/20120404/ddexC" => "DDEX::V20120404::DDEXC",
-    "http://ddex.net/xml/20120404/ddex" => "DDEX::V20120404::DDEX"
+    "http://ddex.net/xml/20120404/ddex" => "DDEX::V20120404::DDEX",
+    "http://ddex.net/xml/ern/36" => "DDEX::ERN::V36",
+    "http://ddex.net/xml/avs/avs" => "DDEX::AVS"
   }
-  mapping[ns] || ns
+  mapping[ns]
 end
 
-def find_classes(root)
+def find_classes(root)  
   root = File.expand_path(root) << "/"
   classes = []
 
@@ -259,7 +262,7 @@ def extract_element(klass)
 end
 
 def valid_class?(klass)
-  return false if klass.java_class.enum?   # Skip Enum for now, maybe for ever!
+  return false if klass.java_class.enum?  # Skip Enum for now, maybe for ever!
   return false if klass.java_class.annotation_present?(javax.xml.bind.annotation.XmlRegistry.java_class)
   return false unless klass.java_class.annotation_present?(javax.xml.bind.annotation.XmlType.java_class) or
                       klass.java_class.annotation_present?(javax.xml.bind.annotation.XmlRootElement.java_class)
@@ -278,7 +281,7 @@ end
 
 def save_classes(classes)
   outdir = "out/"
-  template = TEMPLATES["roxml"]
+  template = TEMPLATES["roxml"]  
 
   # Just do this once!
   ERB.new(File.read(template), nil, "<>%-").def_method(Template, "render(klass)")
@@ -291,8 +294,11 @@ def save_classes(classes)
   end
 end
 
+# javac -d /tmp/xxxx files
+# xjc -extension -d /tmp/xxxx classes -b lib/xjc/config.xjb
+
 abort "usage: #{File.basename($0)} [OPTIONS] classes" if ARGV.empty?
-$CLASSPATH << File.join(Dir.pwd, ARGV[0])
+$CLASSPATH << ARGV[0]
 
 classes = find_classes(ARGV[0])
 abort "No classes found at: #{ARGV[0]}" if classes.empty?

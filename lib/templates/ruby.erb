@@ -1,0 +1,41 @@
+#
+# Auto-generated using jaxb2ruby v0.0.1 on <%= Time.now %>
+#
+
+<%- klass.requires.each do |mod| -%>
+require "<%= mod %>"
+<%- end -%>
+
+<%= klass.module.map { |mod| "module #{mod}" }.join " " %>
+
+class <%= klass.name %>          
+  <%- nodes = (klass.element.children + klass.element.attributes) -%>
+  <%- nodes.each do |attr| -%>
+    attr_accessor :<%= attr.accessor %>
+  <%- end -%>
+
+  def initialize(attributes = {})
+    <%- nodes.each do |node| -%>
+      <%# what about string keys? %>
+      <%- if node.array? -%>
+        @<%= node.accessor %> = Array(attributes[:<%= node.accessor %>]).dup
+      <%- elsif node.hash? -%>
+        @<%= node.accessor %> = attributes[:<%= node.accessor %>].is_a?(Hash) ? attributes[:<%= node.accessor %>].dup : {}
+      <%- elsif node.type == :boolean -%>
+        <%# remove ending "?" %>
+        @<%= node.accessor.chop %> = attributes[:<%= node.accessor.chop %>]
+      <%- else -%>
+        @<%= node.accessor %> = attributes[:<%= node.accessor %>]
+      <%- end -%>
+    <%- end -%>
+  end
+
+  def inspect
+    <%- n = [5, nodes.size].min %>
+    <%- attribs = nodes.sort_by { |node| node.accessor }.take(n) %>
+    <%#fix bools %>
+    sprintf "#<%s:0x%x <%= attribs.map { |node| nodea.accessor }.join(", ") %>>", self.class.name, object_id, <%= attribs.map { |node| node.accessor }.join(", ") %>
+  end
+end
+
+<%= klass.module.map { "end" }.join " " %>
