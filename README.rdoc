@@ -1,6 +1,6 @@
 = jaxb2ruby
 
-Generate XML object mappings from a schema using JAXB
+Generate Ruby objects from an XML schema using JAXB and JRuby
 
 <b>DO NOT USE, WORK IN PROGRESS</b>
 
