@@ -1,6 +1,6 @@
 = jaxb2ruby
 
-Generate Ruby objects from an XML schema using JAXB and JRuby
+Generate Ruby objects from an XML schema using {JAXB}[https://en.wikipedia.org/wiki/Java_Architecture_for_XML_Binding] and JRuby
 
 <b>DO NOT USE, WORK IN PROGRESS</b>
 
