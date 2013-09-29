@@ -1,5 +1,3 @@
-require "erb"
-
 module JAXB2Ruby
   # Maybe...
   # class Namespace < String
@@ -80,11 +78,12 @@ module JAXB2Ruby
     attr :module
     attr :element
 
-    def initialize(klass, element)
+    def initialize(klass, element, dependencies = nil)
       @class = klass
       @name  = klass.demodulize
       @module = klass.deconstantize # >= 3.2
       @element = element
+      @dependencies = dependencies || []
 
       @module.extend Enumerable
       def @module.each(&block)
@@ -105,39 +104,16 @@ module JAXB2Ruby
     end
 
     def path
-      @path ||= @module.to_a.push(filename).map { |mod| mod.underscore }.join("/")
+      @path ||= make_path(@module.to_a.push(filename))
     end
 
-    # Bit of a last second hack here :(
     def requires
-      @requires ||= begin
-        req = []
-        (element.children + element.attributes).each do |node|
-          # Only select types that look like a module          
-          # If this is going to be used, we'll have to check !TYPEMAP.values.include? else a 
-          # user-defined type mapping to a class with no module won't be required
-          if node.type.is_a?(String) and node.type.include?("::")
-            req << node.type.split("::").map { |mod| mod.underscore }.join("/")
-          end
-        end
-        req.sort
-      end
-    end
-  end
-  
-  class Template
-    def initialize(path)
-      @__path = path
-      raise ArgumentError, "invalid or missing template: #@__path" unless File.file?(@__path) and File.readable?(@__path)
+      @requires ||= make_path(@dependencies).sort
     end
 
-    def erb
-      @__erb ||= ERB.new(File.read(@__path))
-    end
-
-    def build(klass)
-      @class = klass
-      erb.result(binding)
+    private
+    def make_path(classes)
+      classes.map { |klass| klass.underscore }.join("/")
     end
   end
 end

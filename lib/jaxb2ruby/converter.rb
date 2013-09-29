@@ -15,6 +15,20 @@ module JAXB2Ruby
     ]
 
     DEFAULT_TEMPLATE = TEMPLATES["roxml"]
+
+    # Not a JRuby way to do this..?
+    TYPEMAP = {
+      "boolean" => :boolean,
+      "java.lang.Boolean" => :boolean,
+      "java.lang.String" => "String",
+      "java.lang.Integer" => "Integer",
+      "java.math.BigDecimal" => "Integer",
+      "java.math.BigInteger" => "Integer",
+      "javax.xml.datatype.Duration" => "String",
+      "javax.xml.datatype.XMLGregorianCalendar" => "DateTime",
+      # others...
+    }
+
     XJC_CONFIG = lib + "/xjc/config.xjb"
  
     # https://github.com/thoughtbot/cocaine/issues/24
@@ -24,7 +38,7 @@ module JAXB2Ruby
       @schema = schema
       raise ArgumentError, "cannot access schema: #@schema" unless File.file?(@schema) and File.readable?(@schema)
 
-      # Try: named template, template path, default
+      # If it's not a named template assume it's a path
       @template = Template.new(TEMPLATES[options[:template]] || options[:template] || DEFAULT_TEMPLATE)
 
       @namespace = options[:namespace] || {}
@@ -167,7 +181,9 @@ module JAXB2Ruby
     def extract_class(klass)
       type = translate_type(klass)
       element = extract_element(klass)
-      RubyClass.new(type, element)
+      # If a String type isn't in the *original* typemap, it must be XML mapped class
+      dependencies = (element.children + element.attributes).select { |node| node.type.is_a?(String) and !TYPEMAP.values.include?(node.type) } 
+      RubyClass.new(type, element, dependencies)
     end
 
     def extract_element(klass)
