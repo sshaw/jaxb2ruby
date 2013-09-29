@@ -1,15 +1,22 @@
 require "cocaine"
-require "erb"
 require "find"
 require "fileutils"
 require "java"
 
 module JAXB2Ruby
   class Converter
-    
-    # Define some things here and use @class as ERB arg instead
-    Template = Class.new
 
+    lib = File.expand_path(File.dirname(__FILE__))
+
+    TEMPLATES = Hash[
+      Dir[lib + "/templates/*.erb"].map do |path|
+        [File.basename(path, ".erb"), path]
+      end
+    ]
+
+    DEFAULT_TEMPLATE = TEMPLATES["roxml"]
+    XJC_CONFIG = lib + "/xjc/config.xjb"
+ 
     # https://github.com/thoughtbot/cocaine/issues/24
     # Cocaine::CommandLine.runner = Cocaine::CommandLine::BackticksRunner.new
 
@@ -17,12 +24,12 @@ module JAXB2Ruby
       @schema = schema
       raise ArgumentError, "cannot access schema: #@schema" unless File.file?(@schema) and File.readable?(@schema)
 
-      @template = options[:template] || TEMPLATE["roxml"]
-      raise ArgumentError, "invalid or missing template: #@template" unless TEMPLATES.include(@template) or File.file?(@template)
+      # Try: named template, template path, default
+      @template = Template.new(TEMPLATES[options[:template]] || options[:template] || DEFAULT_TEMPLATE)
 
       @namespace = options[:namespace] || {}
       raise ArgumentError, "namespace mapping muse be a Hash" unless Hash === @namespace
-      
+
       @output  = options[:output] || "ruby"
       @typemap = Hash === options[:typemap] ? TYPEMAP.merge(options[:typemap]) : TYPEMAP
     end
@@ -36,7 +43,7 @@ module JAXB2Ruby
     end
 
     private
-    def setup_tmpdirs      
+    def setup_tmpdirs
       @tmproot = Dir.mktmpdir
       @classes = File.join(@tmproot, "classes")
       @sources = File.join(@tmproot, "source")
@@ -51,8 +58,8 @@ module JAXB2Ruby
     end
 
     def xjc
-      line  = Cocaine::CommandLine.new("xjc", "-d :classes :schema -b :config ")
-      line.run(:schema => @schema, :classes => @classes, :config => "")
+      line  = Cocaine::CommandLine.new("xjc", "-d :sources :schema -b :config ")
+      line.run(:schema => @schema, :sources => @sources, :config => XJC_CONFIG)
     rescue Cocaine::ExitStatusError => e
       raise Error, "xjc execution failed: #{e}"
     rescue Cocaine::CommandNotFoundError => e
@@ -61,32 +68,35 @@ module JAXB2Ruby
 
     def javac
       # https://github.com/thoughtbot/cocaine/pull/56
-      files = Dir[ File.join(@source, "/**/*.java") ]
+      files = Dir[ File.join(@sources, "/**/*.java") ]
       keys = 1.upto(files.size).map { |n| "file#{n}" }
-      options = Hash[keys.zip(files)].merge(:classes => @classes)
-      
+      argv = Hash[keys.zip(files)].merge(:classes => @classes)
+
       line = Cocaine::CommandLine.new("javac", "-d :classes " << keys.map { |key| ":#{key}" }.join(" "))
-      line.run(:classes => @classes)
+      line.run(argv)
     rescue Cocaine::ExitStatusError => e
       raise Error, "javac execution failed: #{e}"
     rescue Cocaine::CommandNotFoundError => e
       raise command_not_found("javac")
     end
-    
+
+    class Template
+      def initialize(template)
+        ERB.new(File.read(@template), nil, "<>%-").def_method(Template, "render(klass)")
+      end
+    end
+
     def create_ruby_classes
       java_classes = find_java_classes(@classes)
-      raise Error, "No classes found at: #{@options[:classes]}" if java_classes.empty?
+      raise Error, "no classes were generated from the schema" if java_classes.empty?
 
       $CLASSPATH << @classes unless $CLASSPATH.include?(@classes)
       ruby_classes = extract_classes(java_classes)
-
-      ERB.new(File.read(@template), nil, "<>%-").def_method(Template, "render(klass)")
-      t = Template.new
-
+     
       ruby_classes.each do |klass|
-        puts "generating: #{klass.path}" 
+        puts "generating: #{klass.path}"
         FileUtils.mkdir_p(File.join(@output, klass.directory))
-        File.open(File.join(@output, klass.path), "w") { |io| io.puts t.render(klass) }
+        File.open(File.join(@output, klass.path), "w") { |io| io.puts @template.build(klass) }
       end
 
     rescue IOError, SystemCallError => e
@@ -94,7 +104,9 @@ module JAXB2Ruby
     end
 
     def find_java_classes(root)
-      root = File.expand_path(root) << "/"
+      # Without this, parent dir removal below could leave "/" at the start of a non-root path
+      # why do we need exapand though..?
+      root = File.expand_path(root) << "/" unless root.end_with?("/")
       classes = []
 
       Find.find(root) do |path|

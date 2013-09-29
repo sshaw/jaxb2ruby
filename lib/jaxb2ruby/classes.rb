@@ -1,3 +1,5 @@
+require "erb"
+
 module JAXB2Ruby
   # Maybe...
   # class Namespace < String
@@ -120,6 +122,22 @@ module JAXB2Ruby
         end
         req.sort
       end
+    end
+  end
+  
+  class Template
+    def initialize(path)
+      @__path = path
+      raise ArgumentError, "invalid or missing template: #@__path" unless File.file?(@__path) and File.readable?(@__path)
+    end
+
+    def erb
+      @__erb ||= ERB.new(File.read(@__path))
+    end
+
+    def build(klass)
+      @class = klass
+      erb.result(binding)
     end
   end
 end

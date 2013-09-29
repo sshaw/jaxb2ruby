@@ -2,14 +2,14 @@
 # Auto-generated using jaxb2ruby v0.0.1 on <%= Time.now %>
 #
 
-<%- klass.requires.each do |mod| -%>
+<%- @class.requires.each do |mod| -%>
 require "<%= mod %>"
 <%- end -%>
 
-<%= klass.module.map { |mod| "module #{mod}" }.join " " %>
+<%= @class.module.map { |mod| "module #{mod}" }.join " " %>
 
-class <%= klass.name %>
-  <%- nodes = (klass.element.children + klass.element.attributes) -%>
+class <%= @class.name %>
+  <%- nodes = (@class.element.children + @class.element.attributes) -%>
   <%- nodes.each do |attr| -%>
     attr_accessor :<%= attr.accessor %>
   <%- end -%>
@@ -39,4 +39,4 @@ class <%= klass.name %>
   end
 end
 
-<%= klass.module.map { "end" }.join " " %>
+<%= @class.module.map { "end" }.join " " %>

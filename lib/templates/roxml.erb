@@ -4,22 +4,22 @@
 
 require "roxml"
 
-<%- klass.requires.each do |mod| -%>
+<%- @class.requires.each do |mod| -%>
 require "<%= mod %>"
 <%- end -%>
 
-<%= klass.module.map { |mod| "module #{mod}" }.join " " %>
+<%= @class.module.map { |mod| "module #{mod}" }.join " " %>
 
-class <%= klass.name %>
+class <%= @class.name %>
   include ROXML
 
-  <%# if klass.element.namespace -%>    
-    #xml_namespaces <%# klass.element.namespace.prefix %> => "<%= klass.element.namespace %>"
+  <%# if @class.element.namespace -%>    
+    #xml_namespaces <%# @class.element.namespace.prefix %> => "<%= @class.element.namespace %>"
   <%#- end -%>
 
-  xml_name "<%= klass.element.name %>"
+  xml_name "<%= @class.element.name %>"
 
-  <%- klass.element.children.each do |e| -%>
+  <%- @class.element.children.each do |e| -%>
     <%- if e.array? -%>
       <%# ROXML doesn't like String as an argument to :as ?! %>
       xml_accessor :<%= e.accessor %>, :as => [<%= e.type unless e.type == "String" %>], :from => "<%= e.name %>", :required => <%= e.required? %>
@@ -36,11 +36,11 @@ class <%= klass.name %>
     <%- end -%>
   <%- end -%>
 
-  <%- if klass.element.text? -%>
-    xml_accessor :content, :from => ".", :required => <%= klass.element.required? %>
+  <%- if @class.element.text? -%>
+    xml_accessor :content, :from => ".", :required => <%= @class.element.required? %>
   <%- end -%>
 
-  <% klass.element.attributes.each do |attr| %>
+  <% @class.element.attributes.each do |attr| %>
     <%- if attr.type == :boolean || attr.type == "String" -%>
       xml_accessor :<%= attr.accessor %>, :from => "@<%= attr.name %>", :required => <%= attr.required? %>
     <% else %>
@@ -49,4 +49,4 @@ class <%= klass.name %>
   <% end %>
 end
 
-<%= klass.module.map { "end" }.join " " %>
+<%= @class.module.map { "end" }.join " " %>
