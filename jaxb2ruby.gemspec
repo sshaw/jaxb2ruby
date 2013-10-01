@@ -6,9 +6,9 @@ Gem::Specification.new do |s|
   s.date        = Date.today
   s.summary     = "Generate Ruby objects from an XML schema using JAXB and JRuby"
   s.description =<<-DESC
-    jaxb2ruby reads the Java XML mapping annotations created by the xjc command and passes the 
-    extracted info to an ERB template. This allows one to map the XML to pure Ruby classes using the
-    mapping framework of their choice. 
+    jaxb2ruby generates Java XML mappings via xjc, reads the resulting annotations, and passes the 
+    extracted info to an ERB template. This allows one to automatically map an XML schema to pure 
+    Ruby classes using the mapping framework of their choice. 
     
     Several templates are included: ROXML, HappyMapper and generic Ruby class.
   DESC

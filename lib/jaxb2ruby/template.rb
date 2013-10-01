@@ -3,9 +3,9 @@ require "erb"
 module JAXB2Ruby
   class Template
     def initialize(path)
-      @__erb ||= ERB.new(File.read(path))
+      @__erb ||= ERB.new(File.read(path), nil, "<>%-")
     rescue => e
-      raise Error, "cannot load ruby class template: #{e}"
+      raise Error, "cannot load class template: #{e}"
     end
 
     def build(klass)

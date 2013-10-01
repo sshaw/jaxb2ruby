@@ -96,7 +96,7 @@ module JAXB2Ruby
     end
 
     def filename
-      "#@name.rb"
+      "#{@name.underscore}.rb"
     end
 
     def directory
@@ -108,12 +108,12 @@ module JAXB2Ruby
     end
 
     def requires
-      @requires ||= make_path(@dependencies).sort
+      @requires ||= @dependencies.map { |e| make_path(e.type.split("::")) }.sort
     end
 
     private
-    def make_path(classes)
-      classes.map { |klass| klass.underscore }.join("/")
+    def make_path(modules)
+      modules.map { |name| name.underscore }.join("/")
     end
   end
 end

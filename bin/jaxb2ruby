@@ -1,15 +1,66 @@
-abort "jaxb2ruby must be ran using JRuby" unless RUBY_PLATFORM == "java"
+#!/usr/bin/env ruby
+
+abort "jaxb2ruby must be run with jruby" unless RUBY_PLATFORM == "java"
 
 require "optparse"
+require "yaml"
 require "jaxb2ruby"
 
-# -t [TYPEMAP]
-options = {}
-parser = "" #optparse
-schema = parser.parse!(ARGV);
-abort parser.usage if schema.empty?
+# namespace mapping
+# -n a=b -n x=y
+# -n file.yaml
+# -n a=b,x=y
 
-begin 
+# -o ruby_code_dir
+
+# -t my/template.erb
+# -t roxml
+# -t ruby
+
+def mapping_option(opt)
+  opt.inject({}) do |cfg, e| 
+    if !e.include?("=") 
+      cfg.merge!(YAML.load_file(e)) rescue "cannot load mapping file: #{e}"
+    else
+      url, klass = e.split("=", 2)
+      raise "mapping option invalid: #{e}" if klass.nil?
+      cfg[url] = klass
+    end
+    cfg
+  end
+end
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = "usage: #{File.basename($0)} [options] schema"
+
+  opts.on("-c", "--classes=MAP1[,MAP2,...]", Array, "Java to Ruby class mappings", "MAP can be a string in the form javaclas=rubyclass or a YAML file of java/ruby class pairs") do |typemap|
+    options[:typemap] = mapping_option(typemap)
+  end
+
+  opts.on("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+
+  opts.on("-n", "--namespace=MAP1[,MAP2,...]", Array, "XML namespace to class mappings", "MAP can be a string in the form namespace=class or a YAML file of namespace/class pairs") do |ns|
+    options[:namespace] = mapping_option(ns)
+  end
+
+  opts.on("-o", "--output=DIRECTORY", "Directory to output the generated ruby classes, defaults to ruby") do |dir|
+    options[:output] = dir
+  end
+
+  opts.on("-t", "--template=NAME", "Template used to generate the ruby classes", "Can be a path to an ERB template or one of: roxml (default), happymapper, ruby") do |t|
+    options[:template] = t
+  end
+end
+
+parser.parse!
+schema = ARGV.shift
+abort parser.banner if schema.nil?
+
+begin
   cmd = JAXB2Ruby::Converter.new(schema, options)
   cmd.run
 rescue => e

@@ -2,11 +2,12 @@ require "cocaine"
 require "find"
 require "fileutils"
 require "java"
+require "tmpdir"
 
 module JAXB2Ruby
   class Converter
 
-    lib = File.expand_path(File.dirname(__FILE__))
+    lib = File.expand_path(__FILE__ + "/../..")
 
     TEMPLATES = Hash[
       Dir[lib + "/templates/*.erb"].map do |path|
@@ -30,9 +31,9 @@ module JAXB2Ruby
     }
 
     XJC_CONFIG = lib + "/xjc/config.xjb"
- 
+
     # https://github.com/thoughtbot/cocaine/issues/24
-    # Cocaine::CommandLine.runner = Cocaine::CommandLine::BackticksRunner.new
+    Cocaine::CommandLine.runner = Cocaine::CommandLine::BackticksRunner.new
 
     def initialize(schema, options = {})
       @schema = schema
@@ -72,7 +73,7 @@ module JAXB2Ruby
     end
 
     def xjc
-      line  = Cocaine::CommandLine.new("xjc", "-d :sources :schema -b :config ")
+      line  = Cocaine::CommandLine.new("xjc", "-extension -d :sources :schema -b :config ")
       line.run(:schema => @schema, :sources => @sources, :config => XJC_CONFIG)
     rescue Cocaine::ExitStatusError => e
       raise Error, "xjc execution failed: #{e}"
@@ -83,7 +84,7 @@ module JAXB2Ruby
     def javac
       # https://github.com/thoughtbot/cocaine/pull/56
       files = Dir[ File.join(@sources, "/**/*.java") ]
-      keys = 1.upto(files.size).map { |n| "file#{n}" }
+      keys = 1.upto(files.size).map { |n| "{file#{n}}" }
       argv = Hash[keys.zip(files)].merge(:classes => @classes)
 
       line = Cocaine::CommandLine.new("javac", "-d :classes " << keys.map { |key| ":#{key}" }.join(" "))
@@ -94,19 +95,13 @@ module JAXB2Ruby
       raise command_not_found("javac")
     end
 
-    class Template
-      def initialize(template)
-        ERB.new(File.read(@template), nil, "<>%-").def_method(Template, "render(klass)")
-      end
-    end
-
     def create_ruby_classes
       java_classes = find_java_classes(@classes)
       raise Error, "no classes were generated from the schema" if java_classes.empty?
 
       $CLASSPATH << @classes unless $CLASSPATH.include?(@classes)
       ruby_classes = extract_classes(java_classes)
-     
+
       ruby_classes.each do |klass|
         puts "generating: #{klass.path}"
         FileUtils.mkdir_p(File.join(@output, klass.directory))
@@ -181,8 +176,8 @@ module JAXB2Ruby
     def extract_class(klass)
       type = translate_type(klass)
       element = extract_element(klass)
-      # If a String type isn't in the *original* typemap, it must be XML mapped class
-      dependencies = (element.children + element.attributes).select { |node| node.type.is_a?(String) and !TYPEMAP.values.include?(node.type) } 
+      # If a String type isn't in the *original* typemap, it must be a XML mapped class
+      dependencies = (element.children + element.attributes).select { |node| node.type.is_a?(String) and !TYPEMAP.values.include?(node.type) }
       RubyClass.new(type, element, dependencies)
     end
 
