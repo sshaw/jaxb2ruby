@@ -20,8 +20,8 @@ require "jaxb2ruby"
 def mapping_option(option)
   option.inject({}) do |cfg, opt|
     if !opt.include?("=")
-      begin 
-        cfg.merge!(YAML.load_file(opt)) 
+      begin
+        cfg.merge!(YAML.load_file(opt))
       rescue => e
         abort "cannot load mapping file: #{e}"
       end

@@ -25,14 +25,14 @@ Otherwise, +jaxb2ruby+ will turn Java packages/classes into Ruby modules/class u
 * +_+ is replaced with +V+.
 * Java inner classes become Ruby inner classes
 
-Some examples
+Some examples:
 
 <code>com.example.User</code> becomes <code>Com::Example::User</code>
 
 <code>com.example.API._V15.User</code> becomes <code>Com::Example::API::V15::User</code>
 
-<code>com.example.User$Addressess$Address</code> results in the creation of 3 classes: <code>User</code>, <code>User::Addressess</code> 
-and <code>User::Addressess::Address</code>, all within the <code>Com::Exampe</code> namespace.
+<code>com.example.User$Addresses$Address</code> results in the creation of 3 classes: <code>User</code>, <code>User::Addresses</code> 
+and <code>User::Addresses::Address</code>, all within the <code>Com::Exampe</code> namespace.
 
 Native types are mapped using the following:
 

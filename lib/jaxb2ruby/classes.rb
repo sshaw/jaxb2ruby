@@ -85,6 +85,15 @@ module JAXB2Ruby
       @element = element
       @dependencies = dependencies || []
 
+      # Uhhh, should this go here...
+      if @class.include?("::")
+        mod = @module.dup
+        @class.split("::")[0..-2].each do |klass| 
+          mod = "#{mod}::#{klass}"          
+          @dependencies << mod
+        end
+      end
+
       @module.extend Enumerable
       def @module.each(&block)
         split("::").each(&block)
@@ -108,7 +117,7 @@ module JAXB2Ruby
     end
 
     def requires
-      @requires ||= @dependencies.map { |e| make_path(e.type.split("::")) }.sort
+      @requires ||= @dependencies.map { |e| make_path(e.split("::")) }.sort
     end
 
     private

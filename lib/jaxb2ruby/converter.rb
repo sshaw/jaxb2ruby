@@ -147,7 +147,9 @@ module JAXB2Ruby
     end
 
     def translate_type(klass)
-      translate_type_ignore_inner_class(klass).gsub("$", "::")
+      str = translate_type_ignore_inner_class(klass)
+      str.gsub!("$", "::") if String === str
+      str
     end
 
     def translate_type_ignore_inner_class(klass)
@@ -180,9 +182,13 @@ module JAXB2Ruby
     def extract_class(klass)
       type = translate_type_ignore_inner_class(klass)
       element = extract_element(klass)
+
+      dependencies = []
       # If a String type isn't in the *original* typemap, it must be a XML mapped class
-      # TODO: If this is an inner class we need to add the parent
-      dependencies = (element.children + element.attributes).select { |node| node.type.is_a?(String) and !TYPEMAP.values.include?(node.type) }
+      (element.children + element.attributes).each do |node|
+        dependencies << node.type if node.type.is_a?(String) and !TYPEMAP.values.include?(node.type)
+      end
+
       RubyClass.new(type, element, dependencies)
     end
 
