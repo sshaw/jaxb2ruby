@@ -54,7 +54,7 @@ module JAXB2Ruby
       create_java_classes
       create_ruby_classes
     ensure
-      FileUtils.rm_rf(@tmproot)
+      FileUtils.rm_rf(@tmproot) if @tmproot
     end
 
     private
@@ -147,6 +147,10 @@ module JAXB2Ruby
     end
 
     def translate_type(klass)
+      translate_type_ignore_inner_class(klass).gsub("$", "::")
+    end
+
+    def translate_type_ignore_inner_class(klass)
       return @typemap[klass.name] if @typemap.include?(klass.name)
       return "String" if klass.enum?
 
@@ -174,9 +178,10 @@ module JAXB2Ruby
     end
 
     def extract_class(klass)
-      type = translate_type(klass)
+      type = translate_type_ignore_inner_class(klass)
       element = extract_element(klass)
       # If a String type isn't in the *original* typemap, it must be a XML mapped class
+      # TODO: If this is an inner class we need to add the parent
       dependencies = (element.children + element.attributes).select { |node| node.type.is_a?(String) and !TYPEMAP.values.include?(node.type) }
       RubyClass.new(type, element, dependencies)
     end
@@ -197,7 +202,7 @@ module JAXB2Ruby
         elsif annot = field.get_annotation(javax.xml.bind.annotation.XmlAttribute.java_class)
           options[:attributes] << Attribute.new(annot.name, :type => resolve_type(field), :required => annot.required?)
         else
-          warn "Cannot extract element/attribute from: #{klass.name}.#{field.name})"
+          warn "warning: cannot extract element/attribute from: #{klass.name}.#{field.name})"
         end
       end
 
@@ -206,7 +211,7 @@ module JAXB2Ruby
       name  = annot.name
       if name.empty?
         annot = klass.get_annotation(javax.xml.bind.annotation.XmlRootElement.java_class)
-        name  = annot.name
+        name  = annot ? annot.name : klass.name.split("$").last # might be an inner class
       end
 
       # Should grab annot.prop_order

@@ -79,8 +79,8 @@ module JAXB2Ruby
     attr :element
 
     def initialize(klass, element, dependencies = nil)
-      @class = klass
-      @name  = klass.demodulize
+      @class = klass.gsub("$", "::")
+      @name  = klass.demodulize.gsub("$", "::")
       @module = klass.deconstantize # >= 3.2
       @element = element
       @dependencies = dependencies || []

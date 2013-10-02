@@ -6,22 +6,32 @@ Generate Ruby objects from an XML schema using {JAXB}[https://en.wikipedia.org/w
 
 === Usage
 
-  jaxb2ruby [options] schema
-    -c, --classes=MAP1[,MAP2,...]    Java to Ruby class mappings
-                                     MAP can be a string in the form javaclas=rubyclass or a YAML file of java/ruby class pairs
-    -h, --help                       Show this message
-    -n, --namespace=MAP1[,MAP2,...]  XML namespace to class mappings
-                                     MAP can be a string in the form namespace=class or a YAML file of namespace/class pairs
-    -o, --output=DIRECTORY           Directory to output the generated ruby classes, defaults to ruby
-    -t, --template=NAME              Template used to generate the ruby classes
-                                     Can be a path to an ERB template or one of: roxml (default), happymapper, ruby
-
-=== Namespace/Class Mapping
-
-
+  > jaxb2ruby --help
+  usage: jaxb2ruby [options] schema
+      -c, --classes=MAP1[,MAP2,...]    Java to Ruby class mappings
+                                       MAP can be a string in the form javaclas=rubyclass or a YAML file of java/ruby class pairs
+      -h, --help                       Show this message
+      -n, --namespace=MAP1[,MAP2,...]  XML namespace to class mappings
+                                       MAP can be a string in the form namespace=class or a YAML file of namespace/class pairs
+      -o, --output=DIRECTORY           Directory to output the generated ruby classes, defaults to ruby
+      -t, --template=NAME              Template used to generate the ruby classes
+                                       Can be a path to an ERB template or one of: roxml (default), happymapper, ruby
 === Java/Ruby Class Mapping
 
-+jaxb2ruby+ uses the below mapping. You can specify your own mapping via the <code>-c</code> option.
+You can specify your own mapping(s) via the <code>-c</code> option.
+Otherwise, +jaxb2ruby+ will turn Java packages into Ruby modules and create class names using the following conventions:
+
+* +.+ is replaced with +::+, +_+ is replaced with +V+.
+* Java inner classes become Ruby inner classes
+
+Some examples
+
+* <code>com.example.User</code> = <code>Com::Example::User</code>
+* <code>com.example._40.API</code> = <code>Com::Example::V40::API</code>
+* <code>com.example.User$Addressess$Address</code> = <code>Com::Example::User::Addressess::Address</code> with 3 classes:
+<code>class User</code>, <code>class User::Addressess</code> and <code>class User::Addressess::Address</code>
+
+Native types are mapped using the following:
 
 boolean :: :boolean
 java.lang.Boolean :: :boolean
@@ -31,3 +41,7 @@ java.math.BigDecimal :: Integer
 java.math.BigInteger :: Integer
 javax.xml.datatype.Duration :: String
 javax.xml.datatype.XMLGregorianCalendar :: DateTime
+
+=== Namespace/Class Mapping
+
+You can specify your own mapping(s) via the <code>-n</code> option.

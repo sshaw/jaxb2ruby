@@ -17,13 +17,17 @@ require "jaxb2ruby"
 # -t roxml
 # -t ruby
 
-def mapping_option(opt)
-  opt.inject({}) do |cfg, e| 
-    if !e.include?("=") 
-      cfg.merge!(YAML.load_file(e)) rescue "cannot load mapping file: #{e}"
+def mapping_option(option)
+  option.inject({}) do |cfg, opt|
+    if !opt.include?("=")
+      begin 
+        cfg.merge!(YAML.load_file(opt)) 
+      rescue => e
+        abort "cannot load mapping file: #{e}"
+      end
     else
-      url, klass = e.split("=", 2)
-      raise "mapping option invalid: #{e}" if klass.nil?
+      url, klass = opt.split("=", 2)
+      abort "mapping option invalid: #{opt}" if klass.nil? or klass.empty?
       cfg[url] = klass
     end
     cfg
@@ -53,6 +57,11 @@ parser = OptionParser.new do |opts|
 
   opts.on("-t", "--template=NAME", "Template used to generate the ruby classes", "Can be a path to an ERB template or one of: roxml (default), happymapper, ruby") do |t|
     options[:template] = t
+  end
+
+  opts.on("-v", "--version", "jaxb2ruby version") do
+    puts "v#{JAXB2Ruby::VERSION}"
+    exit
   end
 end
 
