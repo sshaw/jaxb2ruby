@@ -19,17 +19,20 @@ Generate Ruby objects from an XML schema using {JAXB}[https://en.wikipedia.org/w
 === Java/Ruby Class Mapping
 
 You can specify your own mapping(s) via the <code>-c</code> option.
-Otherwise, +jaxb2ruby+ will turn Java packages into Ruby modules and create class names using the following conventions:
+Otherwise, +jaxb2ruby+ will turn Java packages/classes into Ruby modules/class using the following conventions:
 
-* +.+ is replaced with +::+, +_+ is replaced with +V+.
+* +.+ is replaced with <code>::</code>
+* +_+ is replaced with +V+.
 * Java inner classes become Ruby inner classes
 
 Some examples
 
-* <code>com.example.User</code> = <code>Com::Example::User</code>
-* <code>com.example._40.API</code> = <code>Com::Example::V40::API</code>
-* <code>com.example.User$Addressess$Address</code> = <code>Com::Example::User::Addressess::Address</code> with 3 classes:
-<code>class User</code>, <code>class User::Addressess</code> and <code>class User::Addressess::Address</code>
+<code>com.example.User</code> becomes <code>Com::Example::User</code>
+
+<code>com.example.API._V15.User</code> becomes <code>Com::Example::API::V15::User</code>
+
+<code>com.example.User$Addressess$Address</code> results in the creation of 3 classes: <code>User</code>, <code>User::Addressess</code> 
+and <code>User::Addressess::Address</code>, all within the <code>Com::Exampe</code> namespace.
 
 Native types are mapped using the following:
 
