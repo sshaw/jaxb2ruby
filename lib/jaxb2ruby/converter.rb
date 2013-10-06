@@ -24,6 +24,10 @@ module JAXB2Ruby
     # https://github.com/thoughtbot/cocaine/issues/24
     Cocaine::CommandLine.runner = Cocaine::CommandLine::BackticksRunner.new
 
+    def self.convert(schema, options = {})
+      new(schema, options).convert
+    end
+
     def initialize(schema, options = {})
       @schema = schema
       raise ArgumentError, "cannot access schema: #@schema" unless File.file?(@schema) and File.readable?(@schema)
@@ -190,16 +194,14 @@ module JAXB2Ruby
       if annot = klass.get_annotation(javax.xml.bind.annotation.XmlRootElement.java_class)
         name = annot.name
         options[:root] = true
-        options[:namespace] = extract_namespace(annot)
       end
 
-      if name.nil? || name.empty?
+      if name.blank?
         annot = klass.get_annotation(javax.xml.bind.annotation.XmlType.java_class)
         name  = annot.name
-        options[:namespace] = extract_namespace(annot)
       end
 
-      name = klass.name if name.nil? or name.empty?
+      name = klass.name if name.blank?
       name = name.split("$").last # might be an inner class
 
       # Should grab annot.prop_order
