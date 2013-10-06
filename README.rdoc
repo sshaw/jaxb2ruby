@@ -45,6 +45,11 @@ java.math.BigInteger :: Integer
 javax.xml.datatype.Duration :: String
 javax.xml.datatype.XMLGregorianCalendar :: DateTime
 
+Class mappings have precidence over namespace mappings.
+
 === Namespace/Class Mapping
 
 You can specify your own mapping(s) via the <code>-n</code> option.
+
+Namespace mappings have a lower precidence than class mappings.
+

@@ -1,21 +1,47 @@
 module JAXB2Ruby
-  # Maybe...
-  # class Namespace < String
-  #   def prefix
-  #     # something
-  #   end
-  # end
+  class ClassName < String
+    attr :class               # module + class
+    attr :name                # class
+    attr :module              # module
+    attr :parent_class
+
+    # Turn a java class name into a ruby class name, keeping inner classes inner
+    def initialize(java_name)
+      @class = java_name.split(".").map { |pkg| pkg.sub(/\A_/, "V").camelize }.join("::")
+      @name = @class.demodulize.gsub("$", "::")
+      @module = @class.deconstantize # >= 3.2
+      @parent_class = sprintf "%s::%s", @module, @name.sub(/::\w+\Z/,"") if @class.gsub!("$", "::")
+
+      super @class
+    end
+  end
+
+  class Namespace < String
+    counter = 0
+    @@prefixes = Hash.new { |h,ns|  h[ns] = "ns#{counter+=1}".freeze }
+
+    attr :name
+    attr :prefix
+
+    def initialize(name)
+      @name   = name
+      @prefix = @@prefixes[name]
+      super
+    end
+  end
 
   class Node
     attr :type
     attr :name
     attr :namespace
     attr :accessor
+    attr :default
 
     def initialize(name, options = {})
       @name = name
       @accessor = name.underscore
       @namespace = options[:namespace]
+      @default = options[:default]
       @type = options[:type]
 
       @required = !!options[:required]
@@ -42,6 +68,7 @@ module JAXB2Ruby
       super
       @array = !!options[:array]
       @text = !!options[:text]
+      @root = !!options[:root]
       @hash = false
       @children = options[:children] || []
       @attributes = options[:attributes] || []
@@ -59,6 +86,10 @@ module JAXB2Ruby
       end
     end
 
+    def root?
+      @root
+    end
+
     def text?
       @text
     end
@@ -74,25 +105,16 @@ module JAXB2Ruby
 
   class RubyClass
     attr :class
+    attr :element
     attr :name
     attr :module
-    attr :element
-
-    def initialize(klass, element, dependencies = nil)
-      @class = klass.gsub("$", "::")
-      @name  = klass.demodulize.gsub("$", "::")
-      @module = klass.deconstantize # >= 3.2
+    
+    def initialize(type, element, dependencies = nil)
+      @class = type
+      @name  = type.name
+      @module = type.module.dup
       @element = element
       @dependencies = dependencies || []
-
-      # Uhhh, should this go here...
-      if @class.include?("::")
-        mod = @module.dup
-        @class.split("::")[0..-2].each do |klass| 
-          mod = "#{mod}::#{klass}"          
-          @dependencies << mod
-        end
-      end
 
       @module.extend Enumerable
       def @module.each(&block)

@@ -6,17 +6,6 @@ require "tmpdir"
 
 module JAXB2Ruby
   class Converter
-
-    lib = File.expand_path(__FILE__ + "/../..")
-
-    TEMPLATES = Hash[
-      Dir[lib + "/templates/*.erb"].map do |path|
-        [File.basename(path, ".erb"), path]
-      end
-    ]
-
-    DEFAULT_TEMPLATE = TEMPLATES["roxml"]
-
     # Not a JRuby way to do this..?
     TYPEMAP = {
       "boolean" => :boolean,
@@ -30,7 +19,7 @@ module JAXB2Ruby
       # others...
     }
 
-    XJC_CONFIG = lib + "/xjc/config.xjb"
+    XJC_CONFIG = File.expand_path(__FILE__ + "/../../xjc/config.xjb")
 
     # https://github.com/thoughtbot/cocaine/issues/24
     Cocaine::CommandLine.runner = Cocaine::CommandLine::BackticksRunner.new
@@ -39,17 +28,13 @@ module JAXB2Ruby
       @schema = schema
       raise ArgumentError, "cannot access schema: #@schema" unless File.file?(@schema) and File.readable?(@schema)
 
-      # If it's not a named template assume it's a path
-      @template = Template.new(TEMPLATES[options[:template]] || options[:template] || DEFAULT_TEMPLATE)
-
       @namespace = options[:namespace] || {}
       raise ArgumentError, "namespace mapping muse be a Hash" unless Hash === @namespace
 
-      @output  = options[:output] || "ruby"
       @typemap = Hash === options[:typemap] ? TYPEMAP.merge(options[:typemap]) : TYPEMAP
     end
 
-    def run
+    def convert
       setup_tmpdirs
       create_java_classes
       create_ruby_classes
@@ -72,8 +57,9 @@ module JAXB2Ruby
       javac
     end
 
+    # this puts a namespace on XmlType annot
     def xjc
-      line  = Cocaine::CommandLine.new("xjc", "-extension -d :sources :schema -b :config ")
+      line  = Cocaine::CommandLine.new("xjc", "-extension -npa -d :sources :schema -b :config ")
       line.run(:schema => @schema, :sources => @sources, :config => XJC_CONFIG)
     rescue Cocaine::ExitStatusError => e
       raise Error, "xjc execution failed: #{e}"
@@ -100,14 +86,7 @@ module JAXB2Ruby
       raise Error, "no classes were generated from the schema" if java_classes.empty?
 
       $CLASSPATH << @classes unless $CLASSPATH.include?(@classes)
-      ruby_classes = extract_classes(java_classes)
-
-      ruby_classes.each do |klass|
-        puts "generating: #{klass.path}"
-        FileUtils.mkdir_p(File.join(@output, klass.directory))
-        File.open(File.join(@output, klass.path), "w") { |io| io.puts @template.build(klass) }
-      end
-
+      extract_classes(java_classes)
     rescue IOError, SystemCallError => e
       raise Error, "failed to generate ruby class: #{e}"
     end
@@ -119,7 +98,7 @@ module JAXB2Ruby
       classes = []
 
       Find.find(root) do |path|
-        if File.file?(path) && File.extname(path) == ".class" && !File.basename(path).start_with?("package-info.")
+        if File.file?(path) && File.extname(path) == ".class"
           path[root] = ""   # Want com/example/Class not root/com/example/Class
           classes << path
         end
@@ -128,40 +107,28 @@ module JAXB2Ruby
       classes.map { |path| java_name_from_path(path) }
     end
 
-    def ruby_name_from_java(pkg)
-      pkg.to_s.split(".")[1..-1].map { |s|
-        s.sub(/\A_/, "V").camelize
-      }.join "::"
-    end
-
     def java_name_from_path(path)
       klass = path.split(%r{/}).join(".")
       klass[%r{\.class\Z}] = ""
       klass
     end
 
-    def extract_namespace(klass)
-      pkg = klass.package
-      ns = pkg.get_annotation(javax.xml.bind.annotation.XmlSchema.java_class)
-      ns.namespace if ns
+    def extract_namespace(annot)
+      Namespace.new(annot.namespace) unless annot.namespace == "##default"
     end
 
     def translate_type(klass)
-      str = translate_type_ignore_inner_class(klass)
-      str.gsub!("$", "::") if String === str
-      str
-    end
-
-    def translate_type_ignore_inner_class(klass)
       return @typemap[klass.name] if @typemap.include?(klass.name)
       return "String" if klass.enum?
 
-      if modname = @namespace[extract_namespace(klass)]
-        type = klass.name
+      type  = klass.name
+      annot = klass.get_annotation(javax.xml.bind.annotation.XmlRootElement.java_class) || klass.get_annotation(javax.xml.bind.annotation.XmlType.java_class)
+
+      if annot && modname = @namespace[annot.namespace]
         type.sub!("#{klass.get_package.name}.", "#{modname}::")
-      else
-        ruby_name_from_java(klass.name)
       end
+
+      ClassName.new(type)
     end
 
     def resolve_type(field)
@@ -180,10 +147,11 @@ module JAXB2Ruby
     end
 
     def extract_class(klass)
-      type = translate_type_ignore_inner_class(klass)
+      type = translate_type(klass)
       element = extract_element(klass)
 
       dependencies = []
+      dependencies << type.parent_class if type.parent_class
       # If a String type isn't in the *original* typemap, it must be a XML mapped class
       (element.children + element.attributes).each do |node|
         dependencies << node.type if node.type.is_a?(String) and !TYPEMAP.values.include?(node.type)
@@ -192,37 +160,53 @@ module JAXB2Ruby
       RubyClass.new(type, element, dependencies)
     end
 
-    def extract_element(klass)
-      options = {
-        :namespace  => extract_namespace(klass),
-        :attributes => [],
-        :children   => []
-      }
+    def extract_elements_nodes(klass)
+      nodes = { :attributes => [], :children => [] }
 
       klass.declared_fields.each do |field|
-        annot = field.get_annotation(javax.xml.bind.annotation.XmlElement.java_class)
-        if annot
-          options[:children] << Element.new(annot.name, :type => resolve_type(field), :required => annot.required?)
+        if annot = field.get_annotation(javax.xml.bind.annotation.XmlElement.java_class) || field.get_annotation(javax.xml.bind.annotation.XmlAttribute.java_class)
+          childopts = { :namespace => extract_namespace(annot), :required => annot.required?, :type => resolve_type(field) }
+          childname = annot.name == "##default" ? field.name : annot.name  # TODO: inner class on field.name
+
+          if annot.is_a?(javax.xml.bind.annotation.XmlElement)
+            childopts[:default] = annot.default_value
+            nodes[:children] << Element.new(childname, childopts)
+          else
+            nodes[:attributes] << Attribute.new(childname, childopts)
+          end
         elsif field.annotation_present?(javax.xml.bind.annotation.XmlValue.java_class)
-          options[:text] = true
-        elsif annot = field.get_annotation(javax.xml.bind.annotation.XmlAttribute.java_class)
-          options[:attributes] << Attribute.new(annot.name, :type => resolve_type(field), :required => annot.required?)
+          nodes[:text] = true
         else
           warn "warning: cannot extract element/attribute from: #{klass.name}.#{field.name})"
         end
       end
 
-      # Get the element's name
-      annot = klass.get_annotation(javax.xml.bind.annotation.XmlType.java_class)
-      name  = annot.name
-      if name.empty?
-        annot = klass.get_annotation(javax.xml.bind.annotation.XmlRootElement.java_class)
-        name  = annot ? annot.name : klass.name.split("$").last # might be an inner class
+      nodes
+    end
+
+    def extract_element(klass)
+      options = extract_elements_nodes(klass)
+
+      if annot = klass.get_annotation(javax.xml.bind.annotation.XmlRootElement.java_class)
+        name = annot.name
+        options[:root] = true
+        options[:namespace] = extract_namespace(annot)
       end
+
+      if name.nil? || name.empty?
+        annot = klass.get_annotation(javax.xml.bind.annotation.XmlType.java_class)
+        name  = annot.name
+        options[:namespace] = extract_namespace(annot)
+      end
+
+      name = klass.name if name.nil? or name.empty?
+      name = name.split("$").last # might be an inner class
 
       # Should grab annot.prop_order
       # annot.prop_order are java props here we have element names
       # element.elements.sort_by! { |e| annot.prop_order.index }
+      options[:namespace] = extract_namespace(annot)
+
       Element.new(name, options)
     end
 
