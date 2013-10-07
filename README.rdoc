@@ -2,6 +2,8 @@
 
 Generate Ruby objects from an XML schema using {JAXB}[https://en.wikipedia.org/wiki/Java_Architecture_for_XML_Binding] and JRuby
 
+{<img src="https://codeclimate.com/github/sshaw/jaxb2ruby.png" />}[https://codeclimate.com/github/sshaw/jaxb2ruby]
+
 <b>DO NOT USE, WORK IN PROGRESS</b>
 
 === Usage
@@ -32,7 +34,7 @@ Some examples:
 <code>com.example.API._V15.User</code> becomes <code>Com::Example::API::V15::User</code>
 
 <code>com.example.User$Addresses$Address</code> results in the creation of 3 classes: <code>User</code>, <code>User::Addresses</code> 
-and <code>User::Addresses::Address</code>, all within the <code>Com::Exampe</code> namespace.
+and <code>User::Addresses::Address</code>, all within the <code>Com::Example</code> namespace.
 
 Native types are mapped using the following:
 

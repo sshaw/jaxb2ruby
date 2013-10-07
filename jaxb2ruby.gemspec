@@ -1,8 +1,9 @@
 require "date"
+require "jaxb2ruby"
 
 Gem::Specification.new do |s|
   s.name        = "jaxb2ruby"
-  s.version     = "v0.0.1"
+  s.version     = JAXB2Ruby::VERSION
   s.date        = Date.today
   s.summary     = "Generate Ruby objects from an XML schema using JAXB and JRuby"
   s.description =<<-DESC
