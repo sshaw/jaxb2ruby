@@ -1,21 +1,4 @@
-require "minitest/autorun"
-require "jaxb2ruby"
-
-def schema(name)
-  File.expand_path("../fixtures/#{name}.xsd", __FILE__)
-end
-
-def convert(xsd, options = {})
-  JAXB2Ruby::Converter.convert(schema(xsd), options)
-end
-
-def class_hash(classes)
-  Hash[ classes.map { |klass| [ klass.name, klass ] } ]
-end
-
-def node_hash(element)
-  Hash[ (element.children + element.attributes).map { |node| [node.name, node] } ]
-end
+require "spec_helper"
 
 describe JAXB2Ruby::Converter do
   it "creates ruby classes" do
@@ -96,16 +79,32 @@ describe JAXB2Ruby::Converter do
 
     required = node_hash(classes["Address"].element).select { |_, v| v.required? }
     required.size.must_equal(4)
+    %w[House Street Town PostCode].each { |attr| required.must_include(attr) } 
   end
 
-  # it "detects attributes that are required" do
-  # end
+  it "detects attributes that are required" do
+    classes = class_hash(convert("address"))
+    required = classes["Recipient"].element.attributes.select { |_, v| v.required? }
+    required.must_be_empty
+
+    required = class_hash(classes["Address"].element.attributes).select { |_, v| v.required? }
+    required.size.must_equal(1)
+    required.first.must_include("PostCode")
+  end
 
   # it "detects optional elements" do
   # end
 
-  # it "detects element defaults" do
-  # end
+  it "detects element defaults" do
+    classes = class_hash(convert("address"))
+    defaults = class_hash(classes["Recipient"].element.children).reject { |_, v| v.default.nil? }
+    defaults.must_be_empty
+
+    defaults = class_hash(classes["Address"].element.children).reject { |_, v| v.default.nil? }    
+    defaults.size.must_equal(1)
+    defaults.must_include("Country")
+    defaults["Country"].default.must_equal("US")
+  end
 
   # it "detects attribute defaults" do
   # end

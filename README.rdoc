@@ -4,7 +4,6 @@
 
 Generate Ruby objects from an XML schema using {JAXB}[https://en.wikipedia.org/wiki/Java_Architecture_for_XML_Binding] and JRuby
 
-
 <b>DO NOT USE, WORK IN PROGRESS</b>
 
 === Usage
@@ -19,6 +18,7 @@ Generate Ruby objects from an XML schema using {JAXB}[https://en.wikipedia.org/w
       -o, --output=DIRECTORY           Directory to output the generated ruby classes, defaults to ruby
       -t, --template=NAME              Template used to generate the ruby classes
                                        Can be a path to an ERB template or one of: roxml (default), happymapper, ruby
+
 === Java/Ruby Class Mapping
 
 You can specify your own mapping(s) via the <code>-c</code> option.
