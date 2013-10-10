@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://example.com/types">
+  <xs:element name="Types">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="boolean" type="xs:boolean"/>
+        <xs:element name="byte" type="xs:byte"/>
+        <xs:element name="date" type="xs:date"/>
+        <xs:element name="day" type="xs:gDay"/>
+        <xs:element name="decimal" type="xs:decimal"/>
+        <xs:element name="double" type="xs:double"/>
+        <xs:element name="duration" type="xs:duration"/>
+        <xs:element name="id" type="xs:ID"/>
+        <xs:element name="idref" type="xs:IDREF"/>
+        <xs:element name="int" type="xs:integer"/>
+        <xs:element name="long" type="xs:long"/>
+        <xs:element name="short" type="xs:short"/>
+        <xs:element name="string" type="xs:string"/>
+        <xs:element name="time" type="xs:time"/>
+        <xs:element name="year" type="xs:gYear"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

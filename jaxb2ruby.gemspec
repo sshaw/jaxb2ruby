@@ -1,3 +1,5 @@
+$:.unshift File.expand_path("../lib/", __FILE__)
+
 require "date"
 require "jaxb2ruby"
 
@@ -24,4 +26,5 @@ Gem::Specification.new do |s|
   s.license     = "MIT"
   s.add_dependency "activesupport", ">= 3.2"
   s.add_dependency "cocaine", "~> 0.5"
+  s.add_development_dependency "rake", "~> 10.0"
 end

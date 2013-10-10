@@ -9,7 +9,7 @@ module JAXB2Ruby
     def initialize(java_name)
       @class = java_name.split(".").map { |pkg| pkg.sub(/\A_/, "V").camelize }.join("::")
       @name = @class.demodulize.gsub("$", "::")
-      @module = @class.deconstantize # >= 3.2
+      @module = @class.deconstantize
       @parent_class = sprintf "%s::%s", @module, @name.sub(/::\w+\Z/,"") if @class.gsub!("$", "::")
 
       super @class
@@ -108,7 +108,7 @@ module JAXB2Ruby
     attr :element
     attr :name
     attr :module
-    
+
     def initialize(type, element, dependencies = nil)
       @class = type
       @name  = type.name

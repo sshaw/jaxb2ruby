@@ -1,8 +1,9 @@
 = jaxb2ruby
 
+{<img src="https://codeclimate.com/github/sshaw/jaxb2ruby.png" />}[https://codeclimate.com/github/sshaw/jaxb2ruby]
+
 Generate Ruby objects from an XML schema using {JAXB}[https://en.wikipedia.org/wiki/Java_Architecture_for_XML_Binding] and JRuby
 
-{<img src="https://codeclimate.com/github/sshaw/jaxb2ruby.png" />}[https://codeclimate.com/github/sshaw/jaxb2ruby]
 
 <b>DO NOT USE, WORK IN PROGRESS</b>
 

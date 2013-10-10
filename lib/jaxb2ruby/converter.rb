@@ -9,16 +9,24 @@ module JAXB2Ruby
     # Not a JRuby way to do this..?
     TYPEMAP = {
       "boolean" => :boolean,
+      "byte" => "Fixnum",
+      "double" => "Float",
+      "float" => "Float",
+      "int" => "Fixnum",
+      "java.lang.Object" => "Object",
       "java.lang.Boolean" => :boolean,
+      "java.lang.Integer" => "Fixnum",
       "java.lang.String" => "String",
-      "java.lang.Integer" => "Integer",
-      "java.math.BigDecimal" => "Integer",
-      "java.math.BigInteger" => "Integer",
+      "java.math.BigDecimal" => "Float",
+      "java.math.BigInteger" => "Fixnum",
       "javax.xml.datatype.Duration" => "String",
       "javax.xml.datatype.XMLGregorianCalendar" => "DateTime",
+      "long" => "Fixnum",
+      "short" => "Fixnum"
       # others...
     }
 
+    XML_DEFAULT = "##default"
     XJC_CONFIG = File.expand_path(__FILE__ + "/../../xjc/config.xjb")
 
     # https://github.com/thoughtbot/cocaine/issues/24
@@ -61,7 +69,6 @@ module JAXB2Ruby
       javac
     end
 
-    # this puts a namespace on XmlType annot
     def xjc
       line  = Cocaine::CommandLine.new("xjc", "-extension -npa -d :sources :schema -b :config ")
       line.run(:schema => @schema, :sources => @sources, :config => XJC_CONFIG)
@@ -118,17 +125,24 @@ module JAXB2Ruby
     end
 
     def extract_namespace(annot)
-      Namespace.new(annot.namespace) unless annot.namespace == "##default"
+      Namespace.new(annot.namespace) unless annot.namespace == XML_DEFAULT
+    end
+
+    def find_namespace(klass)
+      annot = klass.get_annotation(javax.xml.bind.annotation.XmlRootElement.java_class) || klass.get_annotation(javax.xml.bind.annotation.XmlType.java_class)
+      return unless annot
+
+      annot.namespace == XML_DEFAULT && klass.enclosing_class ?
+        find_namespace(klass.enclosing_class) :
+        annot.namespace
     end
 
     def translate_type(klass)
       return @typemap[klass.name] if @typemap.include?(klass.name)
       return "String" if klass.enum?
 
-      type  = klass.name
-      annot = klass.get_annotation(javax.xml.bind.annotation.XmlRootElement.java_class) || klass.get_annotation(javax.xml.bind.annotation.XmlType.java_class)
-
-      if annot && modname = @namespace[annot.namespace]
+      type = klass.name
+      if modname = @namespace[find_namespace(klass)]
         type.sub!("#{klass.get_package.name}.", "#{modname}::")
       end
 
@@ -156,7 +170,7 @@ module JAXB2Ruby
 
       dependencies = []
       dependencies << type.parent_class if type.parent_class
-      # If a String type isn't in the *original* typemap, it must be a XML mapped class
+      # If a String type isn't in the *original* typemap, it must be an XML mapped class
       (element.children + element.attributes).each do |node|
         dependencies << node.type if node.type.is_a?(String) and !TYPEMAP.values.include?(node.type)
       end
@@ -170,7 +184,7 @@ module JAXB2Ruby
       klass.declared_fields.each do |field|
         if annot = field.get_annotation(javax.xml.bind.annotation.XmlElement.java_class) || field.get_annotation(javax.xml.bind.annotation.XmlAttribute.java_class)
           childopts = { :namespace => extract_namespace(annot), :required => annot.required?, :type => resolve_type(field) }
-          childname = annot.name == "##default" ? field.name : annot.name  # TODO: inner class on field.name
+          childname = annot.name == XML_DEFAULT ? field.name : annot.name
 
           if annot.is_a?(javax.xml.bind.annotation.XmlElement)
             childopts[:default] = annot.default_value
