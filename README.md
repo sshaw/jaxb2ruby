@@ -1,12 +1,12 @@
-= jaxb2ruby
+# jaxb2ruby
 
-{<img src="https://codeclimate.com/github/sshaw/jaxb2ruby.png" />}[https://codeclimate.com/github/sshaw/jaxb2ruby]
+[![Build Status](https://codeclimate.com/github/sshaw/jaxb2ruby.png)](https://codeclimate.com/github/sshaw/jaxb2ruby)
 
-Generate Ruby objects from an XML schema using {JAXB}[https://en.wikipedia.org/wiki/Java_Architecture_for_XML_Binding] and JRuby
+Generate Ruby objects from an XML schema using [JAXB](https://en.wikipedia.org/wiki/Java_Architecture_for_XML_Binding) and JRuby
 
 <b>DO NOT USE, WORK IN PROGRESS</b>
 
-=== Usage
+### Usage
 
   > jaxb2ruby --help
   usage: jaxb2ruby [options] schema
@@ -19,23 +19,23 @@ Generate Ruby objects from an XML schema using {JAXB}[https://en.wikipedia.org/w
       -t, --template=NAME              Template used to generate the ruby classes
                                        Can be a path to an ERB template or one of: roxml (default), happymapper, ruby
 
-=== Java/Ruby Class Mapping
+### Java/Ruby Class Mapping
 
-You can specify your own mapping(s) via the <code>-c</code> option.
-Otherwise, +jaxb2ruby+ will turn Java packages/classes into Ruby modules/class using the following conventions:
+You can specify your own mapping(s) via the `-c` option.
+Otherwise, `jaxb2ruby` will turn Java packages/classes into Ruby modules/class using the following conventions:
 
-* +.+ is replaced with <code>::</code>
-* +_+ is replaced with +V+.
+* `.` is replaced with `::`
+* `_` is replaced with `V`.
 * Java inner classes become Ruby inner classes
 
 Some examples:
 
-<code>com.example.User</code> becomes <code>Com::Example::User</code>
+`com.example.User` becomes `Com::Example::User`
 
-<code>com.example.API._V15.User</code> becomes <code>Com::Example::API::V15::User</code>
+`com.example.API._V15.User` becomes `Com::Example::API::V15::User`
 
-<code>com.example.User$Addresses$Address</code> results in the creation of 3 classes: <code>User</code>, <code>User::Addresses</code> 
-and <code>User::Addresses::Address</code>, all within the <code>Com::Example</code> namespace.
+`com.example.User$Addresses$Address` results in the creation of 3 classes: `User`, `User::Addresses` 
+and `User::Addresses::Address`, all within the `Com::Example` namespace.
 
 Native types are mapped using the following:
 
@@ -50,9 +50,9 @@ javax.xml.datatype.XMLGregorianCalendar :: DateTime
 
 Class mappings have precidence over namespace mappings.
 
-=== Namespace/Class Mapping
+### Namespace/Class Mapping
 
-You can specify your own mapping(s) via the <code>-n</code> option.
+You can specify your own mapping(s) via the `-n` option.
 
 Namespace mappings have a lower precidence than class mappings.
 
