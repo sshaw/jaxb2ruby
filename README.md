@@ -8,16 +8,17 @@ Generate Ruby objects from an XML schema using [JAXB](https://en.wikipedia.org/w
 
 ### Usage
 
-  > jaxb2ruby --help
-  usage: jaxb2ruby [options] schema
-      -c, --classes=MAP1[,MAP2,...]    Java to Ruby class mappings
-                                       MAP can be a string in the form javaclas=rubyclass or a YAML file of java/ruby class pairs
-      -h, --help                       Show this message
-      -n, --namespace=MAP1[,MAP2,...]  XML namespace to class mappings
-                                       MAP can be a string in the form namespace=class or a YAML file of namespace/class pairs
-      -o, --output=DIRECTORY           Directory to output the generated ruby classes, defaults to ruby
-      -t, --template=NAME              Template used to generate the ruby classes
-                                       Can be a path to an ERB template or one of: roxml (default), happymapper, ruby
+    > jaxb2ruby --help
+    usage: jaxb2ruby [options] schema
+        -c, --classes=MAP1[,MAP2,...]    Java to Ruby class mappings
+                                         MAP can be a string in the form javaclas=rubyclass or a YAML file of java/ruby class pairs
+        -h, --help                       Show this message
+        -n, --namespace=MAP1[,MAP2,...]  XML namespace to ruby class mappings
+                                         MAP can be a string in the form namespace=class or a YAML file of namespace/class pairs
+        -o, --output=DIRECTORY           Directory to output the generated ruby classes, defaults to ruby
+        -t, --template=NAME              Template used to generate the ruby classes
+                                         Can be a path to an ERB template or one of: roxml (default), happymapper, ruby
+        -v, --version                    jaxb2ruby version
 
 ### Java/Ruby Class Mapping
 
