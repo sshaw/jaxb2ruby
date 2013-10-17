@@ -79,7 +79,7 @@ describe JAXB2Ruby::Converter do
 
     required = node_hash(classes["Address"].element).select { |_, v| v.required? }
     required.size.must_equal(4)
-    %w[House Street Town PostCode].each { |attr| required.must_include(attr) } 
+    %w[House Street Town PostCode].each { |attr| required.must_include(attr) }
   end
 
   it "detects attributes that are required" do
@@ -92,22 +92,19 @@ describe JAXB2Ruby::Converter do
     required.first.must_include("PostCode")
   end
 
-  # it "detects optional elements" do
-  # end
-
   it "detects element defaults" do
     classes = class_hash(convert("address"))
     defaults = class_hash(classes["Recipient"].element.children).reject { |_, v| v.default.nil? }
     defaults.must_be_empty
 
-    defaults = class_hash(classes["Address"].element.children).reject { |_, v| v.default.nil? }    
+    defaults = class_hash(classes["Address"].element.children).reject { |_, v| v.default.nil? }
     defaults.size.must_equal(1)
     defaults.must_include("Country")
     defaults["Country"].default.must_equal("US")
   end
 
-  # it "detects attribute defaults" do
-  # end
+  #it "detects attribute defaults" do
+  #end
 
   describe "ruby data types" do
     it "uses the right type for the given schema type" do

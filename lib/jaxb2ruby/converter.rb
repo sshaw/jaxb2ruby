@@ -26,7 +26,8 @@ module JAXB2Ruby
       # others...
     }
 
-    XML_DEFAULT = "##default"
+    XML_NULL = "\u0000"
+    XML_ANNOT_DEFAULT = "##default"
     XJC_CONFIG = File.expand_path(__FILE__ + "/../../xjc/config.xjb")
 
     # https://github.com/thoughtbot/cocaine/issues/24
@@ -125,14 +126,14 @@ module JAXB2Ruby
     end
 
     def extract_namespace(annot)
-      Namespace.new(annot.namespace) unless annot.namespace == XML_DEFAULT
+      Namespace.new(annot.namespace) unless annot.namespace == XML_ANNOT_DEFAULT
     end
 
     def find_namespace(klass)
       annot = klass.get_annotation(javax.xml.bind.annotation.XmlRootElement.java_class) || klass.get_annotation(javax.xml.bind.annotation.XmlType.java_class)
       return unless annot
 
-      annot.namespace == XML_DEFAULT && klass.enclosing_class ?
+      annot.namespace == XML_ANNOT_DEFAULT && klass.enclosing_class ?
         find_namespace(klass.enclosing_class) :
         annot.namespace
     end
@@ -184,10 +185,10 @@ module JAXB2Ruby
       klass.declared_fields.each do |field|
         if annot = field.get_annotation(javax.xml.bind.annotation.XmlElement.java_class) || field.get_annotation(javax.xml.bind.annotation.XmlAttribute.java_class)
           childopts = { :namespace => extract_namespace(annot), :required => annot.required?, :type => resolve_type(field) }
-          childname = annot.name == XML_DEFAULT ? field.name : annot.name
+          childname = annot.name == XML_ANNOT_DEFAULT ? field.name : annot.name
 
           if annot.is_a?(javax.xml.bind.annotation.XmlElement)
-            childopts[:default] = annot.default_value
+            childopts[:default] = annot.default_value == XML_NULL ? nil : annot.default_value
             nodes[:children] << Element.new(childname, childopts)
           else
             nodes[:attributes] << Attribute.new(childname, childopts)

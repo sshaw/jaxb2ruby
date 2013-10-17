@@ -26,14 +26,14 @@ You can specify your own mapping(s) via the `-c` option.
 Otherwise, `jaxb2ruby` will turn Java packages/classes into Ruby modules/class using the following conventions:
 
 * `.` is replaced with `::`
-* `_` is replaced with `V`.
+* A package component begining with `_` is replaced with `V`.
 * Java inner classes become Ruby inner classes
 
 Some examples:
 
 `com.example.User` becomes `Com::Example::User`
 
-`com.example.API._V15.User` becomes `Com::Example::API::V15::User`
+`com.example.API._15.User` becomes `Com::Example::API::V15::User`
 
 `com.example.User$Addresses$Address` results in the creation of 3 classes: `User`, `User::Addresses` 
 and `User::Addresses::Address`, all within the `Com::Example` namespace.
