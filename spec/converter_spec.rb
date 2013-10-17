@@ -103,8 +103,9 @@ describe JAXB2Ruby::Converter do
     defaults["Country"].default.must_equal("US")
   end
 
-  #it "detects attribute defaults" do
-  #end
+  it "detects attribute defaults" do
+    skip "No all XJC implementations support attribute defaults... but we do"
+  end
 
   describe "ruby data types" do
     it "uses the right type for the given schema type" do

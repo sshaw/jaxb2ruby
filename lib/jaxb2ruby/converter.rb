@@ -187,8 +187,12 @@ module JAXB2Ruby
           childopts = { :namespace => extract_namespace(annot), :required => annot.required?, :type => resolve_type(field) }
           childname = annot.name == XML_ANNOT_DEFAULT ? field.name : annot.name
 
-          if annot.is_a?(javax.xml.bind.annotation.XmlElement)
+          # Not all implementations support default values for attributes
+          if annot.respond_to?(:default_value) 
             childopts[:default] = annot.default_value == XML_NULL ? nil : annot.default_value
+          end
+
+          if annot.is_a?(javax.xml.bind.annotation.XmlElement)
             nodes[:children] << Element.new(childname, childopts)
           else
             nodes[:attributes] << Attribute.new(childname, childopts)
