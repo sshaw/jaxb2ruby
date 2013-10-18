@@ -113,7 +113,8 @@ describe JAXB2Ruby::Converter do
       classes = JAXB2Ruby::Converter.convert(schema("types"))
       nodes = node_hash(classes.first.element)
 
-      { "boolean" => :boolean,
+      { "any"     => "Object",
+        "boolean" => :boolean,
         "byte"    => "Fixnum",
         "date"    => "DateTime",
         "day"     => "Fixnum",

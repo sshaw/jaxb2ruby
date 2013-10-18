@@ -4,6 +4,7 @@
   <xs:element name="Types">
     <xs:complexType>
       <xs:sequence>
+        <xs:element name="any" type="xs:anyType"/>
         <xs:element name="boolean" type="xs:boolean"/>
         <xs:element name="byte" type="xs:byte"/>
         <xs:element name="date" type="xs:date"/>
