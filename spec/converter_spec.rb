@@ -107,6 +107,7 @@ describe JAXB2Ruby::Converter do
     skip "No all XJC implementations support attribute defaults... but we do"
   end
 
+  # TODO: collection types
   describe "ruby data types" do
     it "uses the right type for the given schema type" do
       classes = JAXB2Ruby::Converter.convert(schema("types"))

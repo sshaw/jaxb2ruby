@@ -184,8 +184,10 @@ module JAXB2Ruby
 
       klass.declared_fields.each do |field|
         if annot = field.get_annotation(javax.xml.bind.annotation.XmlElement.java_class) || field.get_annotation(javax.xml.bind.annotation.XmlAttribute.java_class)
+          ## Need to deal with XmlElementRef
           childopts = { :namespace => extract_namespace(annot), :required => annot.required?, :type => resolve_type(field) }
           childname = annot.name == XML_ANNOT_DEFAULT ? field.name : annot.name
+          ##
 
           # Not all implementations support default values for attributes
           if annot.respond_to?(:default_value) 

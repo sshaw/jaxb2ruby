@@ -19,6 +19,13 @@
         <xs:element name="string" type="xs:string"/>
         <xs:element name="time" type="xs:time"/>
         <xs:element name="year" type="xs:gYear"/>
+        <xs:element name="idrefs" maxOccurs="unbounded">
+	  <xs:simpleType>
+	    <xs:restriction base="xs:IDREF">
+	      <xs:pattern value="W[\d\-_a-zA-Z]+"/>
+	    </xs:restriction>
+	  </xs:simpleType>
+	</xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

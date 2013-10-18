@@ -9,7 +9,7 @@
         <xs:element name="Street" type="xs:string" />
         <xs:element name="Town" type="xs:string" />
         <xs:element name="County" type="xs:string" minOccurs="0" />
-        <xs:element name="Country" minOccurs="0" default="US"/>
+        <xs:element name="Country" type="xs:string" minOccurs="0" default="US"/>
       </xs:sequence>
       <xs:attribute name="PostCode" type="xs:string" use="required"/>
     </xs:complexType>
