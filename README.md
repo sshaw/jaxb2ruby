@@ -11,7 +11,7 @@ Generate Ruby objects from an XML schema using [JAXB](https://en.wikipedia.org/w
     > jaxb2ruby --help
     usage: jaxb2ruby [options] schema
         -c, --classes=MAP1[,MAP2,...]    Java to Ruby class mappings
-                                         MAP can be a string in the form javaclas=rubyclass or a YAML file of java/ruby class pairs
+                                         MAP can be a string in the form javaclass=rubyclass or a YAML file of java/ruby class pairs
         -h, --help                       Show this message
         -n, --namespace=MAP1[,MAP2,...]  XML namespace to ruby class mappings
                                          MAP can be a string in the form namespace=class or a YAML file of namespace/class pairs
@@ -57,3 +57,7 @@ You can specify your own mapping(s) via the `-n` option.
 
 Namespace mappings have a lower precidence than class mappings.
 
+### TODO
+
+* Substitution groups
+* Abstract elements

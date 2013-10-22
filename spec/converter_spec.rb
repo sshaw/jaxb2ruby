@@ -135,5 +135,9 @@ describe JAXB2Ruby::Converter do
         nodes[xsd].type.must_equal ruby
       end
     end
+
+    describe "inner classes" do
+      # nodes["inner_class"]
+    end
   end
 end
