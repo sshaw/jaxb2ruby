@@ -1,7 +1,7 @@
 $:.unshift File.expand_path("../lib/", __FILE__)
 
 require "date"
-require "jaxb2ruby"
+require "jaxb2ruby/version"
 
 Gem::Specification.new do |s|
   s.name        = "jaxb2ruby"
