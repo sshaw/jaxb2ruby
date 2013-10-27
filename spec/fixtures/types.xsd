@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	   xmlns="http://example.com/types"
            targetNamespace="http://example.com/types">
+
   <xs:element name="Types">
     <xs:complexType>
       <xs:sequence>
@@ -28,6 +30,9 @@
 	    </xs:restriction>
 	  </xs:simpleType>
 	</xs:element>
+
+	<!-- Will be pluralized to elements -->
+        <xs:element name="element" type="xs:string" maxOccurs="unbounded"/>
 
 	<xs:element name="nested_class">
           <xs:complexType>

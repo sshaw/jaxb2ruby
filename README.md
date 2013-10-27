@@ -61,3 +61,4 @@ Namespace mappings have a lower precidence than class mappings.
 
 * Substitution groups
 * Abstract elements
+* Uniform handling of XML/Java -> Ruby types

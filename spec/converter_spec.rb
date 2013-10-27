@@ -17,6 +17,14 @@ describe JAXB2Ruby::Converter do
     hash["Recipient"].name.must_equal("Recipient")
   end
 
+  it "creates inner classes from complex anonymous types" do
+    hash = class_hash(convert("types"))
+    hash["Types::NestedClass"].must_be_instance_of(JAXB2Ruby::RubyClass)
+    hash["Types::NestedClass"].class.must_equal("Com::Example::Types::Types::NestedClass")
+    hash["Types::NestedClass"].module.must_equal("Com::Example::Types")
+    hash["Types::NestedClass"].name.must_equal("Types::NestedClass")
+  end
+
   it "creates an element for each class" do
     classes = convert("address")
 
@@ -64,10 +72,20 @@ describe JAXB2Ruby::Converter do
   end
 
   it "detects classes that are a root xml element" do
-    classes = class_hash(convert("address"))
-    classes["Address"].element.root?.must_equal(true)
-    # Recipient is a root element in the schema...
-    # classes["Recipient"].element.root?.must_equal(false)
+    classes = class_hash(convert("types"))
+    classes["Types"].element.root?.must_equal(true)
+    classes["Types::NestedClass"].element.root?.must_equal(false)
+  end
+
+  it "detects classes that are arrays" do
+    classes = class_hash(convert("types"))
+    nodes = node_hash(classes["Types"].element)
+    nodes["idrefs"].wont_be_nil
+    nodes["idrefs"].array?.must_equal(true)
+    nodes["idrefs"].type.must_equal("Object")
+
+    nodes["any"].must_be_instance_of(JAXB2Ruby::Element)
+    nodes["any"].array?.must_equal(false)
   end
 
   it "detects elements that are required" do
@@ -107,11 +125,10 @@ describe JAXB2Ruby::Converter do
     skip "No all XJC implementations support attribute defaults... but we do"
   end
 
-  # TODO: collection types
   describe "ruby data types" do
     it "uses the right type for the given schema type" do
-      classes = JAXB2Ruby::Converter.convert(schema("types"))
-      nodes = node_hash(classes.first.element)
+      classes = class_hash(convert("types"))
+      nodes = node_hash(classes["Types"].element)
 
       { "any"     => "Object",
         "boolean" => :boolean,
@@ -131,13 +148,9 @@ describe JAXB2Ruby::Converter do
         "year"    => "Fixnum" }.each do |xsd, ruby|
 
         # xsd type is also the accessor name
-        nodes[xsd].wont_be_nil
-        nodes[xsd].type.must_equal ruby
+        nodes[xsd].must_be_instance_of(JAXB2Ruby::Element)
+        nodes[xsd].type.must_equal(ruby)
       end
-    end
-
-    describe "inner classes" do
-      # nodes["inner_class"]
     end
   end
 end

@@ -154,15 +154,30 @@ module JAXB2Ruby
       return :ID if field.annotation_present?(javax.xml.bind.annotation.XmlID.java_class)
       return :IDREF if field.annotation_present?(javax.xml.bind.annotation.XmlIDREF.java_class)
 
-      type = field.generic_type
-      if type.java_kind_of?(java.lang.reflect.ParameterizedType) #||
-        #type.java_kind_of?(Java::java.lang.reflect.GenericArrayType) ||
-        #type.java_kind_of?(Java::java.lang.reflect.TypeVariable)
-        type.actual_type_arguments.map { |t| translate_type(t) }
-      else
-        # should probably capture enum values
-        translate_type(type)
+      # Very limited type checking here, should be good enough for what we deal with
+      if field.type.name == "java.util.List"
+        resolved_type = []
+        type = field.generic_type
+
+        if type.java_kind_of?(java.lang.reflect.ParameterizedType)
+          type = type.actual_type_arguments.first
+
+          if type.java_kind_of?(java.lang.reflect.ParameterizedType)
+            resolved_type << translate_type(type.actual_type_arguments.first)
+          # elsif type.java_kind_of?(java.lang.reflectype.WildcardType)
+          #   type.get_upper_bounds.each do |lower|
+          #   end
+          #   type.get_lower_bounds.each do |upper|
+          #   end
+          else
+            resolved_type << translate_type(type)
+          end
+        end
+
+        return resolved_type
       end
+
+      translate_type(field.type)
     end
 
     def extract_class(klass)
@@ -183,21 +198,26 @@ module JAXB2Ruby
       nodes = { :attributes => [], :children => [] }
 
       klass.declared_fields.each do |field|
-        if annot = field.get_annotation(javax.xml.bind.annotation.XmlElement.java_class) || field.get_annotation(javax.xml.bind.annotation.XmlAttribute.java_class)
-          ## Need to deal with XmlElementRef
-          childopts = { :namespace => extract_namespace(annot), :required => annot.required?, :type => resolve_type(field) }
-          childname = annot.name == XML_ANNOT_DEFAULT ? field.name : annot.name
-          ##
+        # TODO: also XmlElementRefs, XmlSeeAlso (used on base type to spec subtypes)
+        if annot = field.get_annotation(javax.xml.bind.annotation.XmlElement.java_class)    ||
+                   field.get_annotation(javax.xml.bind.annotation.XmlElementRef.java_class) ||
+                   field.get_annotation(javax.xml.bind.annotation.XmlAttribute.java_class)
 
-          # Not all implementations support default values for attributes
-          if annot.respond_to?(:default_value) 
+          childopts = { :namespace => extract_namespace(annot), :type => resolve_type(field) }
+          childname = annot.name == XML_ANNOT_DEFAULT ? field.name : annot.name
+
+          # XmlElementRefs only support required? on XJC 2.2 (Java 1.7)
+          childopts[:required] = annot.respond_to?(:required?) ? annot.required? : false
+
+          # Not all implementations support default values for attributes (XmlElementRef doesn't at all)
+          if annot.respond_to?(:default_value)
             childopts[:default] = annot.default_value == XML_NULL ? nil : annot.default_value
           end
 
-          if annot.is_a?(javax.xml.bind.annotation.XmlElement)
-            nodes[:children] << Element.new(childname, childopts)
-          else
+          if annot.is_a?(javax.xml.bind.annotation.XmlAttribute)
             nodes[:attributes] << Attribute.new(childname, childopts)
+          else
+            nodes[:children] << Element.new(childname, childopts)
           end
         elsif field.annotation_present?(javax.xml.bind.annotation.XmlValue.java_class)
           nodes[:text] = true
@@ -237,7 +257,7 @@ module JAXB2Ruby
       return false if klass.java_class.enum?  # Skip Enum for now, maybe for ever!
       return false if klass.java_class.annotation_present?(javax.xml.bind.annotation.XmlRegistry.java_class)
       return false unless klass.java_class.annotation_present?(javax.xml.bind.annotation.XmlType.java_class) or
-        klass.java_class.annotation_present?(javax.xml.bind.annotation.XmlRootElement.java_class)
+                          klass.java_class.annotation_present?(javax.xml.bind.annotation.XmlRootElement.java_class)
       true
     end
 
