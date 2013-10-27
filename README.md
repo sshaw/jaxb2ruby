@@ -1,5 +1,6 @@
 # jaxb2ruby
 
+[![Build Status](https://travis-ci.org/sshaw/jaxb2ruby.png)](https://travis-ci.org/sshaw/jaxb2ruby)
 [![Build Status](https://codeclimate.com/github/sshaw/jaxb2ruby.png)](https://codeclimate.com/github/sshaw/jaxb2ruby)
 
 Generate Ruby objects from an XML schema using [JAXB](https://en.wikipedia.org/wiki/Java_Architecture_for_XML_Binding) and JRuby
