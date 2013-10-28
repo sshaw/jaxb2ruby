@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	   targetNamespace="http://example.com"
+	   elementFormDefault="unqualified">
+  <xs:element name="User">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="userName" type="xs:string" />
+        <xs:element name="first_name" type="xs:string" />
+        <xs:element name="LastName" type="xs:string" minOccurs="0" />
+        <xs:element name="number" type="xs:decimal" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="Age" type="xs:decimal" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
