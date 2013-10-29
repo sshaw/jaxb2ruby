@@ -39,7 +39,16 @@ describe JAXB2Ruby::Template do
     t.build(klass).must_equal("sshaw")
   end
 
-  it "builds a list of the available templates"
+  describe "known templates" do
+    let(:paths) { JAXB2Ruby::Template::PATHS }
+
+    %w[happymapper roxml ruby].each do |name|
+      it "includes #{name}" do
+        File.file?(paths[name]).must_equal(true)
+        File.basename(paths[name]).must_equal("#{name}.erb")
+      end
+    end
+  end
 
   describe "a class created by the ruby template" do
     let(:tmpdir)     { Dir.mktmpdir }
@@ -100,7 +109,7 @@ describe JAXB2Ruby::Template do
         attributes.each { |name, _| user.send(name).must_be_nil }
       end
 
-      it "initializes instances using values in the Hash argument" do
+      it "initializes instances using values in a Hash argument" do
         user = Com::Example::User.new(attributes)
         user.must_be_instance_of(Com::Example::User)
         attributes.each { |name, value| user.send(name).must_equal(value) }
@@ -111,7 +120,7 @@ describe JAXB2Ruby::Template do
     end
 
     describe "#inspect" do
-      it "returns a description of the class' state" do
+      it "returns a description of the class' state" do        
       end
     end
   end
