@@ -44,6 +44,7 @@ describe JAXB2Ruby::Template do
 
     %w[happymapper roxml ruby].each do |name|
       it "includes #{name}" do
+        paths.must_include(name)
         File.file?(paths[name]).must_equal(true)
         File.basename(paths[name]).must_equal("#{name}.erb")
       end
