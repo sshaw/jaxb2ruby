@@ -91,12 +91,7 @@ describe JAXB2Ruby::Converter do
   it "detects classes that contain text nodes" do
     classes = class_hash(convert("types"))
     classes["Types"].element.text?.must_equal(false)
-
-    nodes = node_hash(classes["Types"].element)
-    # Just check a few
-    %w[any boolean byte].each { |name| nodes[name].text?.must_equal(false) }
-
-    nodes["text"].text?.must_equal(true)
+    classes["TextType"].element.text?.must_equal(true)
   end
 
   it "detects elements that are required" do

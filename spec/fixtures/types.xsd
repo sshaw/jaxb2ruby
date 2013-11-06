@@ -23,12 +23,6 @@
         <xs:element name="time" type="xs:time"/>
         <xs:element name="year" type="xs:gYear"/>
 
-        <xs:element name="text">
-          <xs:simpleType>
-            <xs:restriction base="xs:string"/>
-          </xs:simpleType>
-        </xs:element>
-
         <xs:element name="idrefs" maxOccurs="unbounded">
           <xs:simpleType>
             <xs:restriction base="xs:IDREF">
@@ -50,4 +44,12 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
+  <xs:complexType name="TextType">
+    <xs:simpleContent>
+      <xs:extension base="xs:integer">
+	<xs:attribute name="blah" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
 </xs:schema>
