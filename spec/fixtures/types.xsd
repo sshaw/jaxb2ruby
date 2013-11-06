@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	   xmlns="http://example.com/types"
+           xmlns="http://example.com/types"
            targetNamespace="http://example.com/types">
 
   <xs:element name="Types">
@@ -23,24 +23,30 @@
         <xs:element name="time" type="xs:time"/>
         <xs:element name="year" type="xs:gYear"/>
 
-        <xs:element name="idrefs" maxOccurs="unbounded">
-	  <xs:simpleType>
-	    <xs:restriction base="xs:IDREF">
-	      <xs:pattern value="W[\d\-_a-zA-Z]+"/>
-	    </xs:restriction>
-	  </xs:simpleType>
-	</xs:element>
+        <xs:element name="text">
+          <xs:simpleType>
+            <xs:restriction base="xs:string"/>
+          </xs:simpleType>
+        </xs:element>
 
-	<!-- Will be pluralized to elements -->
+        <xs:element name="idrefs" maxOccurs="unbounded">
+          <xs:simpleType>
+            <xs:restriction base="xs:IDREF">
+              <xs:pattern value="W[\d\-_a-zA-Z]+"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:element>
+
+        <!-- Will be pluralized to elements -->
         <xs:element name="element" type="xs:string" maxOccurs="unbounded"/>
 
-	<xs:element name="nested_class">
+        <xs:element name="nested_class">
           <xs:complexType>
             <xs:sequence>
               <xs:element name="name" type="xs:string"/>
-	    </xs:sequence>
-	  </xs:complexType>
-	</xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
       </xs:sequence>
     </xs:complexType>
   </xs:element>

@@ -88,6 +88,17 @@ describe JAXB2Ruby::Converter do
     nodes["any"].array?.must_equal(false)
   end
 
+  it "detects classes that contain text nodes" do
+    classes = class_hash(convert("types"))
+    classes["Types"].element.text?.must_equal(false)
+
+    nodes = node_hash(classes["Types"].element)
+    # Just check a few
+    %w[any boolean byte].each { |name| nodes[name].text?.must_equal(false) }
+
+    nodes["text"].text?.must_equal(true)
+  end
+
   it "detects elements that are required" do
     classes = class_hash(convert("address"))
     required = node_hash(classes["Recipient"].element).select { |_, v| v.required? }
