@@ -22,8 +22,8 @@ class <%= @class.name %>
 
   <%- @class.element.children.each do |e| -%>
     <%- if e.array? -%>    
-      <%# ROXML doesn't like String as an argument to :as ?! %>
-      xml_accessor :<%= e.accessor %>, :as => [<%= e.type unless e.type == "String" %>], :from => "<%= e.name %>", :required => <%= e.required? %>
+      <%# ROXML doesn't like String or Object as an argument to :as ?! %>
+      xml_accessor :<%= e.accessor %>, :as => [<%= e.type unless %w[String Object].include?(e.type) %>], :from => "<%= e.name %>", :required => <%= e.required? %>
 
     <%- elsif e.hash? -%>
       xml_accessor :<%= e.accessor %>, :as => {}, :from => "<%= e.name %>", :required => <%= e.required? %>
