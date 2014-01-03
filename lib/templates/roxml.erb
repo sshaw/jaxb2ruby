@@ -28,7 +28,7 @@ class <%= @class.name %>
     <%- elsif e.hash? -%>
       xml_accessor :<%= e.accessor %>, :as => {}, :from => "<%= e.name %>", :required => <%= e.required? %>
 
-    <%- elsif e.type == :boolean || e.type == "String" -%>
+    <%- elsif [:ID, :IDREF, :boolean, "String"].include?(e.type) -%>
       xml_accessor :<%= e.accessor %>, :from => "<%= e.name %>", :required => <%= e.required? %>
 
     <%- else -%>
