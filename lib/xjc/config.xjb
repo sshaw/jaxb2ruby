@@ -14,8 +14,10 @@
       <xjc:simple />
 
       <!-- 
-	   By default these will have the same Java type as xsd:date* -XMLGregorianCalendar.
-	   As is, Ruby can't treat these values as dates, so we need to use a different type.
+	   By default all date types will have the same Java type: XMLGregorianCalendar.
+	   As is, Ruby can't treat the g* types as dates, so we need to use a different type.
+	   
+	   TODO: This can probably be removed now. 
       -->
       <jxb:javaType name="java.lang.Integer" xmlType="xsd:gYear"/>
       <jxb:javaType name="java.lang.Integer" xmlType="xsd:gYearMonth"/>

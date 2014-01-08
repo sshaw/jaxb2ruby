@@ -4,28 +4,10 @@ require "fileutils"
 require "java"
 require "tmpdir"
 
+require "jaxb2ruby/type_util"
+
 module JAXB2Ruby
   class Converter
-    # Not a JRuby way to do this..?
-    TYPEMAP = {
-      "boolean" => :boolean,
-      "byte" => "Fixnum",
-      "double" => "Float",
-      "float" => "Float",
-      "int" => "Fixnum",
-      "java.lang.Object" => "Object",
-      "java.lang.Boolean" => :boolean,
-      "java.lang.Integer" => "Fixnum",
-      "java.lang.String" => "String",
-      "java.math.BigDecimal" => "Float",
-      "java.math.BigInteger" => "Fixnum",
-      "javax.xml.datatype.Duration" => "String",
-      "javax.xml.datatype.XMLGregorianCalendar" => "DateTime",
-      "long" => "Fixnum",
-      "short" => "Fixnum"
-      # others...
-    }
-
     XML_NULL = "\u0000"
     XML_ANNOT_DEFAULT = "##default"
     XJC_CONFIG = File.expand_path(__FILE__ + "/../../xjc/config.xjb")
@@ -44,7 +26,7 @@ module JAXB2Ruby
       @namespace = options[:namespace] || {}
       raise ArgumentError, "namespace mapping muse be a Hash" unless Hash === @namespace
 
-      @typemap = Hash === options[:typemap] ? TYPEMAP.merge(options[:typemap]) : TYPEMAP
+      @typemap = TypeUtil.new(options[:typemap])
     end
 
     def convert
@@ -139,15 +121,13 @@ module JAXB2Ruby
     end
 
     def translate_type(klass)
-      return @typemap[klass.name] if @typemap.include?(klass.name)
+      annot = klass.get_annotation(javax.xml.bind.annotation.XmlSchemaType.java_class)
+      type  = annot ? @typemap.schema2ruby(annot.name) : @typemap.java2ruby(klass.name)
+      return type if type
       return "String" if klass.enum?
 
-      type = klass.name
-      if modname = @namespace[find_namespace(klass)]
-        type.sub!("#{klass.get_package.name}.", "#{modname}::")
-      end
-
-      ClassName.new(type)
+      modname = @namespace[find_namespace(klass)]
+      ClassName.new(klass.name, modname)
     end
 
     def resolve_type(field)
@@ -182,13 +162,16 @@ module JAXB2Ruby
 
     def extract_class(klass)
       type = translate_type(klass)
+      #p "#{type}: #{klass.name}"
+      #p "#{type}: #{klass.get_package.name}"
       element = extract_element(klass)
 
       dependencies = []
       dependencies << type.parent_class if type.parent_class
       # If a String type isn't in the *original* typemap, it must be an XML mapped class
       (element.children + element.attributes).each do |node|
-        dependencies << node.type if node.type.is_a?(String) and !TYPEMAP.values.include?(node.type)
+        #dependencies << node.type if node.type.is_a?(String) and !@typemap.values.include?(node.type)
+        dependencies << node.type if !@typemap.schema_ruby_types.include?(node.type)
       end
 
       RubyClass.new(type, element, dependencies)
@@ -198,31 +181,34 @@ module JAXB2Ruby
       nodes = { :attributes => [], :children => [] }
 
       klass.declared_fields.each do |field|
-        # TODO: also XmlElementRefs, XmlSeeAlso (used on base type to spec subtypes)
+        if field.annotation_present?(javax.xml.bind.annotation.XmlValue.java_class)
+          nodes[:text] = true
+          next
+        end
+
+        childopts = { :type => resolve_type(field) }
+        #childopts[:type] = type # unless Array(type).first == "Object"
+        childname = field.name
+
         if annot = field.get_annotation(javax.xml.bind.annotation.XmlElement.java_class)    ||
-                   field.get_annotation(javax.xml.bind.annotation.XmlElementRef.java_class) ||
+                   field.get_annotation(javax.xml.bind.annotation.XmlElementRef.java_class) ||  # shouldn't need this
                    field.get_annotation(javax.xml.bind.annotation.XmlAttribute.java_class)
 
-          childopts = { :namespace => extract_namespace(annot), :type => resolve_type(field) }
-          childname = annot.name == XML_ANNOT_DEFAULT ? field.name : annot.name
-
-          # XmlElementRefs only support required? on XJC 2.2 (Java 1.7)
+          childopts[:namespace] = extract_namespace(annot)
           childopts[:required] = annot.respond_to?(:required?) ? annot.required? : false
 
-          # Not all implementations support default values for attributes (XmlElementRef doesn't at all)
+          childname = annot.name if annot.name != XML_ANNOT_DEFAULT
+
+          # Not all implementations support default values for attributes
           if annot.respond_to?(:default_value)
             childopts[:default] = annot.default_value == XML_NULL ? nil : annot.default_value
           end
+        end
 
-          if annot.is_a?(javax.xml.bind.annotation.XmlAttribute)
-            nodes[:attributes] << Attribute.new(childname, childopts)
-          else
-            nodes[:children] << Element.new(childname, childopts)
-          end
-        elsif field.annotation_present?(javax.xml.bind.annotation.XmlValue.java_class)
-          nodes[:text] = true
+        if field.annotation_present?(javax.xml.bind.annotation.XmlAttribute.java_class)
+          nodes[:attributes] << Attribute.new(childname, childopts)
         else
-          warn "warning: cannot extract element/attribute from: #{klass.name}.#{field.name})"
+          nodes[:children] << Element.new(childname, childopts)
         end
       end
 
@@ -230,6 +216,7 @@ module JAXB2Ruby
     end
 
     def extract_element(klass)
+      #annot = klass.get_annotation(javax.xml.bind.annotation.XmlType.java_class)
       options = extract_elements_nodes(klass)
 
       if annot = klass.get_annotation(javax.xml.bind.annotation.XmlRootElement.java_class)
@@ -254,11 +241,8 @@ module JAXB2Ruby
     end
 
     def valid_class?(klass)
-      return false if klass.java_class.enum?  # Skip Enum for now, maybe for ever!
-      return false if klass.java_class.annotation_present?(javax.xml.bind.annotation.XmlRegistry.java_class)
-      return false unless klass.java_class.annotation_present?(javax.xml.bind.annotation.XmlType.java_class) or
-                          klass.java_class.annotation_present?(javax.xml.bind.annotation.XmlRootElement.java_class)
-      true
+      # Skip Enum for now, maybe for ever!
+      !klass.java_class.enum? && klass.java_class.annotation_present?(javax.xml.bind.annotation.XmlType.java_class)
     end
 
     def extract_classes(java_classes)

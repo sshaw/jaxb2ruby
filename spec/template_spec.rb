@@ -67,7 +67,7 @@ describe JAXB2Ruby::Template do
       path = File.join(tmpdir, "user.rb")
       classes = convert("class")
 
-      t = JAXB2Ruby::Template.new("ruby")
+      t = JAXB2Ruby::Template.new("ruby") # template
       write(path, t.build(classes.first))
 
       require path

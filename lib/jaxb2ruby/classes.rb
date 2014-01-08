@@ -6,10 +6,10 @@ module JAXB2Ruby
     attr :parent_class
 
     # Turn a java class name into a ruby class name, keeping inner classes inner
-    def initialize(java_name)
+    def initialize(java_name, rubymod = nil)
       @class = java_name.split(".").map { |pkg| pkg.sub(/\A_/, "V").camelize }.join("::")
       @name = @class.demodulize.gsub("$", "::")
-      @module = @class.deconstantize
+      @module = rubymod || @class.deconstantize
       @parent_class = sprintf "%s::%s", @module, @name.sub(/::\w+\Z/,"") if @class.gsub!("$", "::")
 
       super @class

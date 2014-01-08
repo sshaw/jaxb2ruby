@@ -6,19 +6,31 @@
   <xs:element name="Types">
     <xs:complexType>
       <xs:sequence>
+	<!-- QName, NOTATION -->
         <xs:element name="any" type="xs:anyType"/>
+        <!-- <xs:element name="any" type="xs:anySimpleType"/> -->
+        <!-- <xs:element name="any" type="xs:anyURI"/> -->	
+        <xs:element name="base64Binary" type="xs:base64Binary"/>
         <xs:element name="boolean" type="xs:boolean"/>
         <xs:element name="byte" type="xs:byte"/>
+        <xs:element name="unsignedByte" type="xs:unsignedByte"/>
         <xs:element name="date" type="xs:date"/>
+        <xs:element name="dateTime" type="xs:dateTime"/>
         <xs:element name="day" type="xs:gDay"/>
         <xs:element name="decimal" type="xs:decimal"/>
         <xs:element name="double" type="xs:double"/>
         <xs:element name="duration" type="xs:duration"/>
+        <xs:element name="floatX" type="xs:float"/>
+        <xs:element name="hexBinary" type="xs:hexBinary"/>
         <xs:element name="id" type="xs:ID"/>
         <xs:element name="idref" type="xs:IDREF"/>
         <xs:element name="int" type="xs:integer"/>
+        <xs:element name="unsignedInt" type="xs:unsignedInt"/>
         <xs:element name="long" type="xs:long"/>
-        <xs:element name="short" type="xs:short"/>
+        <xs:element name="unsignedLong" type="xs:unsignedLong"/>
+        <xs:element name="month" type="xs:gMonth"/>
+        <xs:element name="monthDay" type="xs:gMonthDay"/>
+        <xs:element name="short" type="xs:short" default="2"/>
         <xs:element name="string" type="xs:string"/>
         <xs:element name="time" type="xs:time"/>
         <xs:element name="year" type="xs:gYear"/>

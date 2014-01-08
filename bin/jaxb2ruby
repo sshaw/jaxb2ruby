@@ -34,7 +34,7 @@ parser = OptionParser.new do |opts|
   opts.banner = "usage: #{File.basename($0)} [options] schema"
 
   # The options are as follows:
-  opts.on("-c", "--classes=MAP1[,MAP2,...]", Array, "Java to Ruby class mappings", "MAP can be a string in the form javaclas=rubyclass or a YAML file of java/ruby class pairs") do |typemap|
+  opts.on("-c", "--classes=MAP1[,MAP2,...]", Array, "XML Schema type to Ruby class mappings", "MAP can be a string in the form type=class or a YAML file of type/class pairs") do |typemap|
     options[:typemap] = mapping_option(typemap)
   end
 

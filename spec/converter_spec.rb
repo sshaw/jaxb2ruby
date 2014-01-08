@@ -71,6 +71,13 @@ describe JAXB2Ruby::Converter do
     hash["Recipient"].element.attributes.must_be_empty
   end
 
+  it "cretates predicate attribute readers for boolean elements" do
+    skip "thinking about this one..."
+    classes = class_hash(convert("types"))
+    nodes = node_hash(classes["Types"].element)
+    nodes["boolean"].accessor.must_equal("boolean?")
+  end
+
   it "detects classes that are a root xml element" do
     classes = class_hash(convert("types"))
     classes["Types"].element.root?.must_equal(true)
@@ -150,7 +157,7 @@ describe JAXB2Ruby::Converter do
         "long"    => "Fixnum",
         "short"   => "Fixnum",
         "string"  => "String",
-        "time"    => "DateTime",
+        "time"    => "Time",
         "year"    => "Fixnum" }.each do |xsd, ruby|
 
         # xsd type is also the accessor name
