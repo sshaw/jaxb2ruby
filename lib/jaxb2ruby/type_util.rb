@@ -6,7 +6,7 @@ module JAXB2Ruby
       "boolean" => "boolean",
       "byte" => "byte",
       # byte[]
-      "B[" => "base64Binary",
+      "[B" => "base64Binary",
       "double" => "double",
       "float" => "float",
       "java.lang.Integer" => "int",
@@ -27,6 +27,7 @@ module JAXB2Ruby
     SCHEMA_TO_RUBY = {
       "ID" => :ID,
       "IDREF" => :IDREF,
+      "anyType" => "Object",
       "anySimpleType" => "Object",
       "base64Binary" => "String",
       "boolean" => :boolean,

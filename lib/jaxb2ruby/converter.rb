@@ -38,6 +38,7 @@ module JAXB2Ruby
     end
 
     private
+    ### Exec class
     def setup_tmpdirs
       @tmproot = Dir.mktmpdir
       @classes = File.join(@tmproot, "classes")
@@ -74,6 +75,7 @@ module JAXB2Ruby
     rescue Cocaine::CommandNotFoundError => e
       raise command_not_found("javac")
     end
+    ### Exec class
 
     def create_ruby_classes
       java_classes = find_java_classes(@classes)
@@ -121,8 +123,7 @@ module JAXB2Ruby
     end
 
     def translate_type(klass)
-      annot = klass.get_annotation(javax.xml.bind.annotation.XmlSchemaType.java_class)
-      type  = annot ? @typemap.schema2ruby(annot.name) : @typemap.java2ruby(klass.name)
+      type = @typemap.java2ruby(klass.name)
       return type if type
       return "String" if klass.enum?
 
@@ -133,6 +134,9 @@ module JAXB2Ruby
     def resolve_type(field)
       return :ID if field.annotation_present?(javax.xml.bind.annotation.XmlID.java_class)
       return :IDREF if field.annotation_present?(javax.xml.bind.annotation.XmlIDREF.java_class)
+
+      annot = field.get_annotation(javax.xml.bind.annotation.XmlSchemaType.java_class)
+      return @typemap.schema2ruby(annot.name) if annot
 
       # Very limited type checking here, should be good enough for what we deal with
       if field.type.name == "java.util.List"
@@ -162,15 +166,12 @@ module JAXB2Ruby
 
     def extract_class(klass)
       type = translate_type(klass)
-      #p "#{type}: #{klass.name}"
-      #p "#{type}: #{klass.get_package.name}"
       element = extract_element(klass)
 
       dependencies = []
       dependencies << type.parent_class if type.parent_class
-      # If a String type isn't in the *original* typemap, it must be an XML mapped class
+      # If a node's type isn't predefined, it must be an XML mapped class
       (element.children + element.attributes).each do |node|
-        #dependencies << node.type if node.type.is_a?(String) and !@typemap.values.include?(node.type)
         dependencies << node.type if !@typemap.schema_ruby_types.include?(node.type)
       end
 
@@ -216,7 +217,6 @@ module JAXB2Ruby
     end
 
     def extract_element(klass)
-      #annot = klass.get_annotation(javax.xml.bind.annotation.XmlType.java_class)
       options = extract_elements_nodes(klass)
 
       if annot = klass.get_annotation(javax.xml.bind.annotation.XmlRootElement.java_class)
@@ -233,6 +233,7 @@ module JAXB2Ruby
       name = name.split("$").last # might be an inner class
 
       # Should grab annot.prop_order
+      # annot = klass.get_annotation(javax.xml.bind.annotation.XmlType.java_class)
       # annot.prop_order are java props here we have element names
       # element.elements.sort_by! { |e| annot.prop_order.index }
       options[:namespace] = extract_namespace(annot)

@@ -1,4 +1,5 @@
 require "spec_helper"
+require "jaxb2ruby/type_util"
 
 describe JAXB2Ruby::Converter do
   it "creates ruby classes" do
@@ -91,8 +92,8 @@ describe JAXB2Ruby::Converter do
     nodes["idrefs"].array?.must_equal(true)
     nodes["idrefs"].type.must_equal("Object")
 
-    nodes["any"].must_be_instance_of(JAXB2Ruby::Element)
-    nodes["any"].array?.must_equal(false)
+    nodes["anyType"].must_be_instance_of(JAXB2Ruby::Element)
+    nodes["anyType"].array?.must_equal(false)
   end
 
   it "detects classes that contain text nodes" do
@@ -138,28 +139,14 @@ describe JAXB2Ruby::Converter do
     skip "No all XJC implementations support attribute defaults... but we do"
   end
 
-  describe "ruby data types" do
-    it "uses the right type for the given schema type" do
+  describe "XML schema to ruby data type mapping" do
+    let(:nodes) {
       classes = class_hash(convert("types"))
-      nodes = node_hash(classes["Types"].element)
+      node_hash(classes["Types"].element)
+    }
 
-      { "any"     => "Object",
-        "boolean" => :boolean,
-        "byte"    => "Fixnum",
-        "date"    => "DateTime",
-        "day"     => "Fixnum",
-        "decimal" => "Float",
-        "double"  => "Float",
-        "duration"=> "String",
-        "id"      => :ID,
-        "idref"   => :IDREF,
-        "int"     => "Fixnum",
-        "long"    => "Fixnum",
-        "short"   => "Fixnum",
-        "string"  => "String",
-        "time"    => "Time",
-        "year"    => "Fixnum" }.each do |xsd, ruby|
-
+    JAXB2Ruby::TypeUtil::SCHEMA_TO_RUBY.each do |xsd, ruby|
+      it "maps #{xsd} elements to #{ruby}" do
         # xsd type is also the accessor name
         nodes[xsd].must_be_instance_of(JAXB2Ruby::Element)
         nodes[xsd].type.must_equal(ruby)

@@ -1,29 +1,15 @@
 <?xml version="1.0"?>
-<jxb:bindings version="1.0" 
-	      xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-	      xmlns:jxb="http://java.sun.com/xml/ns/jaxb" 
-	      xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" 
-	      jxb:extensionBindingPrefixes="xjc">
+<jxb:bindings version="1.0"
+              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+              xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+              xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+              jxb:extensionBindingPrefixes="xjc">
     <jxb:globalBindings>
-      <!-- 
-	   * Creates a type instead of a JAXBElement for xsd:choice elements 
-	   * Pluralizes names (we do this anyways in the Ruby code)
-
-           TODO: write ruby rules to deal with primitive types created by this
+      <!--
+           * Creates a type instead of a JAXBElement for xsd:choice elements
+           * Pluralizes names (we do this anyways in the Ruby code)
       -->
       <xjc:simple />
-
-      <!-- 
-	   By default all date types will have the same Java type: XMLGregorianCalendar.
-	   As is, Ruby can't treat the g* types as dates, so we need to use a different type.
-	   
-	   TODO: This can probably be removed now. 
-      -->
-      <jxb:javaType name="java.lang.Integer" xmlType="xsd:gYear"/>
-      <jxb:javaType name="java.lang.Integer" xmlType="xsd:gYearMonth"/>
-      <jxb:javaType name="java.lang.Integer" xmlType="xsd:gMonthDay"/>
-      <jxb:javaType name="java.lang.Integer" xmlType="xsd:gDay"/>
-		
       <!-- No inherritance when creating elements with a restriction base type -->
       <!-- <xjc:treatRestrictionLikeNewType /> -->
     </jxb:globalBindings>
