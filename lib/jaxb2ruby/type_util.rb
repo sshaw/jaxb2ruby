@@ -69,7 +69,7 @@ module JAXB2Ruby
     end
 
     def schema2ruby(type)
-      SCHEMA_TO_RUBY[type]
+      @schema2ruby[type]
     end
 
     def java2ruby(klass)

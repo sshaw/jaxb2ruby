@@ -3,16 +3,24 @@ module JAXB2Ruby
     attr :class               # module + class
     attr :name                # class
     attr :module              # module
-    attr :parent_class
+    attr :parent_class        # if java inner class
 
     # Turn a java class name into a ruby class name, keeping inner classes inner
     def initialize(java_name, rubymod = nil)
-      @class = java_name.split(".").map { |pkg| pkg.sub(/\A_/, "V").camelize }.join("::")
+      pkg = java_name.split(".")
+      pkg = rubymod ? [rubymod, ns2mod(pkg[-1])] : pkg.map { |part| ns2mod(part) }
+
+      @class = pkg.join("::")
       @name = @class.demodulize.gsub("$", "::")
       @module = rubymod || @class.deconstantize
       @parent_class = sprintf "%s::%s", @module, @name.sub(/::\w+\Z/,"") if @class.gsub!("$", "::")
 
       super @class
+    end
+
+    private
+    def ns2mod(pkg)
+      pkg.sub(/\A_/, "V").camelize
     end
   end
 

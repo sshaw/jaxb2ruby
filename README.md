@@ -21,37 +21,38 @@ Generate Ruby objects from an XML schema using [JAXB](https://en.wikipedia.org/w
                                          Can be a path to an ERB template or one of: roxml (default), happymapper, ruby
         -v, --version                    jaxb2ruby version
 
-### Ruby Class Mapping
+### Ruby Class Mappings
 
-You can specify your own mapping(s) via the `-c` option.
+#### XML Schema Built-in Types
 
-#### Java to Ruby
+XML Schema types will be mapped to the following Ruby types:
 
-`jaxb2ruby` will turn Java packages/classes into Ruby modules/class using the following conventions:
+TODO
 
-* `.` is replaced with `::`
-* A package component begining with `_` is replaced with `V`.
-* Java inner classes become Ruby inner classes
+You can specify your own XML Schema to Ruby type mapping(s) via the `-c` option.
+
+#### XML Schema Complex Types
+
+Complex schema types will `camelized` and turned into Ruby classes. If a type has a namespace
+the namespace will be converted into a module and the resulting class will be placed inside.
+
+Namespaces are turned into modules using a slightly modified version of the rules outlined in the [The Java Architecture for XML Binding (JAXB) 2.0](http://download.oracle.com/otndocs/jcp/jaxb-2.0-fr-eval-oth-JSpec) Section D.5.1 _Mapping from a Namespace URI_. The differences being:
+
+* The list of module/package strings are joined on `"::"`
+* A module/package string beginning with `"_"` is replaced with `"V"`
+* Nested, anonymous XML schema types become Ruby inner classes
 
 Some examples:
 
-`com.example.User` becomes `Com::Example::User`
+`{http://example.com}User` becomes `Com::Example::User`
 
-`com.example.API._15.User` becomes `Com::Example::API::V15::User`
+`{http://example.com/api/15}User` becomes `Com::Example::Api::V15::User`
 
-`com.example.User$Addresses$Address` results in the creation of 3 classes: `User`, `User::Addresses` 
-and `User::Addresses::Address`, all within the `Com::Example` namespace.
+An XML schema type `{http://example.com}User` that contains the nested complex type
+`Addresses`, which itself contains the type `Address` will result in the creation
+of 3 classes: `User`, `User::Addresses` and `User::Addresses::Address`, all within
+the `Com::Example` namespace.
 
-#### XML Schema to Ruby
+You can specify your own namespace to class mapping(s) via the `-n` option.
+Namespace mappings have a lower precedence than type mappings.
 
-Schema types are mapped using the following:
-
-TODO...
-
-Class mappings have precidence over namespace mappings.
-
-### Namespace/Class Mapping
-
-You can specify your own mapping(s) via the `-n` option.
-
-Namespace mappings have a lower precidence than class mappings.

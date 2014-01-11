@@ -139,6 +139,42 @@ describe JAXB2Ruby::Converter do
     skip "No all XJC implementations support attribute defaults... but we do"
   end
 
+  describe "given a namespace to module mapping" do
+    let(:mod)   { "A::Namespace" }
+    let(:nsmap) { { "http://example.com" => mod } }
+
+    it "converts elements in the given namespace to the classes in the given module" do
+      hash = class_hash(convert("address", :namespace => nsmap))
+      hash["Address"].must_be_instance_of(JAXB2Ruby::RubyClass)
+      hash["Address"].class.must_equal("#{mod}::Address")
+      hash["Address"].module.must_equal(mod)
+      hash["Address"].name.must_equal("Address")
+    end
+  end
+
+  describe "given an XML Schema type to Ruby type mapping" do
+    let(:typemap) { {
+        "anySimpleType" => "My::Type",
+        "boolean" => "TrueClass"
+     } }
+
+    # describe "elements without a mapping" do
+    # it "does not convert them" do
+    # end
+    # end
+
+    describe "elements with a mapping" do
+      it "converts them to the given classes" do
+        classes = class_hash(convert("types", :typemap => typemap))
+        nodes = node_hash(classes["Types"].element)
+        typemap.each do |xsd, ruby|
+          nodes[xsd].must_be_instance_of(JAXB2Ruby::Element)
+          nodes[xsd].type.must_equal(ruby)
+        end
+      end
+    end
+  end
+
   describe "XML schema to ruby data type mapping" do
     let(:nodes) {
       classes = class_hash(convert("types"))
