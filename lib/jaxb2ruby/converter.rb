@@ -12,9 +12,6 @@ module JAXB2Ruby
     XML_ANNOT_DEFAULT = "##default"
     XJC_CONFIG = File.expand_path(__FILE__ + "/../../xjc/config.xjb")
 
-    # https://github.com/thoughtbot/cocaine/issues/24
-    Cocaine::CommandLine.runner = Cocaine::CommandLine::BackticksRunner.new
-
     def self.convert(schema, options = {})
       new(schema, options).convert
     end
@@ -26,6 +23,7 @@ module JAXB2Ruby
       @namespace = options[:namespace] || {}
       raise ArgumentError, "namespace mapping muse be a Hash" unless Hash === @namespace
 
+      @usewsdl = options[:wsdl] || false
       @typemap = TypeUtil.new(options[:typemap])
     end
 
@@ -39,6 +37,10 @@ module JAXB2Ruby
 
     private
     ### Exec class
+
+    # https://github.com/thoughtbot/cocaine/issues/24
+    Cocaine::CommandLine.runner = Cocaine::CommandLine::BackticksRunner.new
+
     def setup_tmpdirs
       @tmproot = Dir.mktmpdir
       @classes = File.join(@tmproot, "classes")
@@ -54,7 +56,9 @@ module JAXB2Ruby
     end
 
     def xjc
-      line  = Cocaine::CommandLine.new("xjc", "-extension -npa -d :sources :schema -b :config ")
+      options = @schema.end_with?(".wsdl") || @usewsdl ? "-wsdl " : ""
+      options << "-extension -npa -d :sources :schema -b :config"
+      line  = Cocaine::CommandLine.new("xjc", options)
       line.run(:schema => @schema, :sources => @sources, :config => XJC_CONFIG)
     rescue Cocaine::ExitStatusError => e
       raise Error, "xjc execution failed: #{e}"
@@ -243,6 +247,8 @@ module JAXB2Ruby
 
     def valid_class?(klass)
       # Skip Enum for now, maybe for ever!
+      # TODO: make sure this is a legit class else we can get a const error.
+      # For example, if someone uses a namespace that xjc translates into a /javax?/ package
       !klass.java_class.enum? && klass.java_class.annotation_present?(javax.xml.bind.annotation.XmlType.java_class)
     end
 

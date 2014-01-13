@@ -20,6 +20,8 @@ Generate Ruby objects from an XML schema using [JAXB](https://en.wikipedia.org/w
         -t, --template=NAME              Template used to generate the ruby classes
                                          Can be a path to an ERB template or one of: roxml (default), happymapper, ruby
         -v, --version                    jaxb2ruby version
+		-w, --wsdl                       Treat the schema as a WSDL
+                                         Automatically set if the schema has a `.wsdl' extension
 
 ### Ruby Class Mappings
 
@@ -56,3 +58,17 @@ the `Com::Example` namespace.
 You can specify your own namespace to class mapping(s) via the `-n` option.
 Namespace mappings have a lower precedence than type mappings.
 
+### Code Templates
+
+`jaxb2ruby` uses ERB templates to create Ruby classes. You can use one of the included templates
+or [create your](#rolling-out-your-own-templates). Use the `-t` option to specify the desired template, they are:
+
+* `roxml` the default ([ROXML](https://github.com/Empact/roxml))
+* `happymapper` ([HappyMapper](https://github.com/jnunemaker/happymapper))
+* `ruby` - plain 'ol Ruby class
+
+Note that "Plain 'ol Ruby Class" does not perform XML serialization.
+
+#### Rolling out your own templates
+
+TODO

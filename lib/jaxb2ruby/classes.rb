@@ -68,6 +68,7 @@ module JAXB2Ruby
 
   class Attribute < Node; end
 
+  # TODO: nilable
   class Element < Node
     attr :children
     attr :attributes
