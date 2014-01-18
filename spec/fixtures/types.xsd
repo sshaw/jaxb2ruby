@@ -49,6 +49,8 @@
         <!-- Will be pluralized to elements -->
         <xs:element name="element" type="xs:string" maxOccurs="unbounded"/>
 
+        <xs:element name="nillable" nillable="true"/>
+
         <xs:element name="nested_class">
           <xs:complexType>
             <xs:sequence>

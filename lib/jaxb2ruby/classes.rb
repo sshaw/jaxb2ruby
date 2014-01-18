@@ -68,7 +68,7 @@ module JAXB2Ruby
 
   class Attribute < Node; end
 
-  # TODO: nilable
+  # TODO: nillable
   class Element < Node
     attr :children
     attr :attributes
@@ -78,6 +78,7 @@ module JAXB2Ruby
       @array = !!options[:array]
       @text = !!options[:text]
       @root = !!options[:root]
+      @nillable = !!options[:nillable]
       @hash = false
       @children = options[:children] || []
       @attributes = options[:attributes] || []
@@ -93,6 +94,10 @@ module JAXB2Ruby
           @hash = true
         end
       end
+    end
+
+    def nillable?
+      @nillable
     end
 
     def root?

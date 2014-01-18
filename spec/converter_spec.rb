@@ -85,10 +85,16 @@ describe JAXB2Ruby::Converter do
     classes["Types::NestedClass"].element.root?.must_equal(false)
   end
 
+  it "detects types that are nillable" do
+    classes = class_hash(convert("types"))
+    nodes = node_hash(classes["Types"].element)
+    nodes["nillable"].nillable?.must_equal(true)
+    nodes["element"].nillable?.must_equal(false)
+  end
+
   it "detects classes that are arrays" do
     classes = class_hash(convert("types"))
     nodes = node_hash(classes["Types"].element)
-    nodes["idrefs"].wont_be_nil
     nodes["idrefs"].array?.must_equal(true)
     nodes["idrefs"].type.must_equal("Object")
 
@@ -182,7 +188,7 @@ describe JAXB2Ruby::Converter do
     }
 
     JAXB2Ruby::TypeUtil::SCHEMA_TO_RUBY.each do |xsd, ruby|
-      it "maps #{xsd} elements to #{ruby}" do
+      it "maps the schema type #{xsd} to the ruby type #{ruby}" do
         # xsd type is also the accessor name
         nodes[xsd].must_be_instance_of(JAXB2Ruby::Element)
         nodes[xsd].type.must_equal(ruby)

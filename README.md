@@ -61,13 +61,13 @@ Namespace mappings have a lower precedence than type mappings.
 ### Code Templates
 
 `jaxb2ruby` uses ERB templates to create Ruby classes. You can use one of the included templates
-or [create your](#rolling-out-your-own-templates). Use the `-t` option to specify the desired template, they are:
+or [create your own](#rolling-out-your-own-templates). Use the `-t` option to specify the desired template, they are:
 
 * `roxml` the default ([ROXML](https://github.com/Empact/roxml))
 * `happymapper` ([HappyMapper](https://github.com/jnunemaker/happymapper))
-* `ruby` - plain 'ol Ruby class
+* `ruby` - plain 'ol Ruby classes
 
-Note that "Plain 'ol Ruby Class" does not perform XML serialization.
+Note that "plain 'ol Ruby classes" does not perform XML serialization.
 
 #### Rolling out your own templates
 

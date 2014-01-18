@@ -200,7 +200,8 @@ module JAXB2Ruby
                    field.get_annotation(javax.xml.bind.annotation.XmlAttribute.java_class)
 
           childopts[:namespace] = extract_namespace(annot)
-          childopts[:required] = annot.respond_to?(:required?) ? annot.required? : false
+          childopts[:required] = annot.respond_to?(:required?) ? annot.required? : false 
+          childopts[:nillable] = annot.respond_to?(:nillable?) ? annot.nillable? : false
 
           childname = annot.name if annot.name != XML_ANNOT_DEFAULT
 
