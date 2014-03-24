@@ -122,13 +122,15 @@ module JAXB2Ruby
     attr :element
     attr :name
     attr :module
+    attr :superclass
 
-    def initialize(type, element, dependencies = nil)
+    def initialize(type, element, dependencies = nil, superclass = nil)
       @class = type
       @name  = type.name
       @module = type.module.dup
       @element = element
       @dependencies = dependencies || []
+      @superclass = superclass
 
       @module.extend Enumerable
       def @module.each(&block)

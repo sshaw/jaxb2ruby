@@ -10,7 +10,7 @@ require "<%= mod %>"
 
 <%= @class.module.map { |mod| "module #{mod}" }.join " " %>
 
-class <%= @class.name %>
+class <%= @class.name %> <%= "< #{@class.superclass}" if @class.superclass %>
   <%- if @class.element.children.any? %>
       # Elements
     <%- order[@class.element.children].each do |attr| -%>

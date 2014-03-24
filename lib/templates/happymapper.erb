@@ -11,15 +11,15 @@ require "<%= mod %>"
 
 <%= @class.module.map { |mod| "module #{mod}" }.join " " %>
 
-class <%= @class.name %>
+class <%= @class.name %> <%= "< #{@class.superclass}" if @class.superclass %>
   include HappyMapper
 
-  <%- if @class.element.namespace -%>    
+  <%- if @class.element.namespace -%>
     namespace "<%= @class.element.namespace %>"
   <%- end -%>
 
   tag "<%= @class.element.name %>"
-    
+
   <%- @class.element.children.each do |e| -%>
     <%# if type is namespaced and ! an array we can use has_one %>
     <% next if e.type == :ID || e.type == :IDREF %>

@@ -58,7 +58,7 @@ module JAXB2Ruby
     def xjc
       options = @schema.end_with?(".wsdl") || @usewsdl ? "-wsdl " : ""
       options << "-extension -npa -d :sources :schema -b :config"
-      line  = Cocaine::CommandLine.new("xjc", options)
+      line = Cocaine::CommandLine.new("xjc", options)
       line.run(:schema => @schema, :sources => @sources, :config => XJC_CONFIG)
     rescue Cocaine::ExitStatusError => e
       raise Error, "xjc execution failed: #{e}"
@@ -174,12 +174,19 @@ module JAXB2Ruby
 
       dependencies = []
       dependencies << type.parent_class if type.parent_class
+
+      superclass = nil
+      if klass.superclass.name != "java.lang.Object"
+        superclass = translate_type(klass.superclass)
+        dependencies << superclass
+      end
+
       # If a node's type isn't predefined, it must be an XML mapped class
       (element.children + element.attributes).each do |node|
         dependencies << node.type if !@typemap.schema_ruby_types.include?(node.type)
       end
 
-      RubyClass.new(type, element, dependencies)
+      RubyClass.new(type, element, dependencies, superclass)
     end
 
     def extract_elements_nodes(klass)
@@ -200,7 +207,7 @@ module JAXB2Ruby
                    field.get_annotation(javax.xml.bind.annotation.XmlAttribute.java_class)
 
           childopts[:namespace] = extract_namespace(annot)
-          childopts[:required] = annot.respond_to?(:required?) ? annot.required? : false 
+          childopts[:required] = annot.respond_to?(:required?) ? annot.required? : false
           childopts[:nillable] = annot.respond_to?(:nillable?) ? annot.nillable? : false
 
           childname = annot.name if annot.name != XML_ANNOT_DEFAULT
@@ -247,7 +254,7 @@ module JAXB2Ruby
     end
 
     def valid_class?(klass)
-      # Skip Enum for now, maybe for ever!
+      # Skip Enum for now, maybe forever!
       # TODO: make sure this is a legit class else we can get a const error.
       # For example, if someone uses a namespace that xjc translates into a /javax?/ package
       !klass.java_class.enum? && klass.java_class.annotation_present?(javax.xml.bind.annotation.XmlType.java_class)

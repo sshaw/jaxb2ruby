@@ -69,4 +69,12 @@
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+
+  <xs:complexType name="TextSubType">
+    <xs:simpleContent>
+      <xs:extension base="TextType">
+	<xs:attribute name="whaaa" type="xs:string" />
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
 </xs:schema>

@@ -16,6 +16,7 @@ describe JAXB2Ruby::Converter do
     hash["Recipient"].class.must_equal("Com::Example::Recipient")
     hash["Recipient"].module.must_equal("Com::Example")
     hash["Recipient"].name.must_equal("Recipient")
+    hash["Recipient"].superclass.must_be_nil
   end
 
   it "creates inner classes from complex anonymous types" do
@@ -24,6 +25,13 @@ describe JAXB2Ruby::Converter do
     hash["Types::NestedClass"].class.must_equal("Com::Example::Types::Types::NestedClass")
     hash["Types::NestedClass"].module.must_equal("Com::Example::Types")
     hash["Types::NestedClass"].name.must_equal("Types::NestedClass")
+  end
+
+  it "creates superclasses from complex extension bases" do
+    hash = class_hash(convert("types"))
+    hash["TextSubType"].must_be_instance_of(JAXB2Ruby::RubyClass)
+    hash["TextSubType"].class.must_equal("Com::Example::Types::TextSubType")
+    hash["TextSubType"].superclass.must_equal("Com::Example::Types::TextType")
   end
 
   it "creates an element for each class" do
@@ -187,6 +195,7 @@ describe JAXB2Ruby::Converter do
       node_hash(classes["Types"].element)
     }
 
+    # TODO: nillablePrimitiveArray
     JAXB2Ruby::TypeUtil::SCHEMA_TO_RUBY.each do |xsd, ruby|
       it "maps the schema type #{xsd} to the ruby type #{ruby}" do
         # xsd type is also the accessor name
