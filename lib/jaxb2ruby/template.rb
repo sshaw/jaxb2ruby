@@ -1,7 +1,7 @@
 require "erb"
 
 module JAXB2Ruby
-  class Template
+  class Template  # :nodoc:
     PATHS = Hash[
       Dir[File.expand_path(__FILE__ + "/../../templates/*.erb")].map do |path|
         [File.basename(path, ".erb"), path]

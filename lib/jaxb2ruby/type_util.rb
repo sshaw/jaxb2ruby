@@ -1,5 +1,5 @@
 module JAXB2Ruby
-  class TypeUtil
+  class TypeUtil  # :nodoc:
     # Only includes types that aren't annotated with @XmlSchemaType
     JAVA_TO_SCHEMA = {
       "java.lang.Boolean" => "boolean",

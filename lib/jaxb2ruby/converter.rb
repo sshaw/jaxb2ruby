@@ -1,85 +1,38 @@
-require "cocaine"
 require "find"
 require "fileutils"
 require "java"
-require "tmpdir"
 
+require "jaxb2ruby/xjc"
 require "jaxb2ruby/type_util"
 
 module JAXB2Ruby
   class Converter
     XML_NULL = "\u0000"
     XML_ANNOT_DEFAULT = "##default"
-    XJC_CONFIG = File.expand_path(__FILE__ + "/../../xjc/config.xjb")
 
     def self.convert(schema, options = {})
       new(schema, options).convert
     end
 
     def initialize(schema, options = {})
-      @schema = schema
-      raise ArgumentError, "cannot access schema: #@schema" unless File.file?(@schema) and File.readable?(@schema)
+      raise ArgumentError, "cannot access schema: #{schema}" unless File.file?(schema) and File.readable?(schema)
+      @xjc = XJC.new(schema, :wsdl => !!options[:wsdl])
 
       @namespace = options[:namespace] || {}
-      raise ArgumentError, "namespace mapping muse be a Hash" unless Hash === @namespace
+      raise ArgumentError, "namespace mapping must be a Hash" unless Hash === @namespace
 
-      @usewsdl = options[:wsdl] || false
       @typemap = TypeUtil.new(options[:typemap])
     end
 
     def convert
-      setup_tmpdirs
       create_java_classes
       create_ruby_classes
-    ensure
-      FileUtils.rm_rf(@tmproot) if @tmproot
     end
 
     private
-    ### Exec class
-
-    # https://github.com/thoughtbot/cocaine/issues/24
-    Cocaine::CommandLine.runner = Cocaine::CommandLine::BackticksRunner.new
-
-    def setup_tmpdirs
-      @tmproot = Dir.mktmpdir
-      @classes = File.join(@tmproot, "classes")
-      @sources = File.join(@tmproot, "source")
-      [@classes, @sources].each { |dir| Dir.mkdir(dir) }
-    rescue IOErorr, SystemCallError => e
-      raise Error, "error creating temp directories: #{e}"
-    end
-
     def create_java_classes
-      xjc
-      javac
+      @classes = @xjc.execute
     end
-
-    def xjc
-      options = @schema.end_with?(".wsdl") || @usewsdl ? "-wsdl " : ""
-      options << "-extension -npa -d :sources :schema -b :config"
-      line = Cocaine::CommandLine.new("xjc", options)
-      line.run(:schema => @schema, :sources => @sources, :config => XJC_CONFIG)
-    rescue Cocaine::ExitStatusError => e
-      raise Error, "xjc execution failed: #{e}"
-    rescue Cocaine::CommandNotFoundError => e
-      raise command_not_found("xjc")
-    end
-
-    def javac
-      # https://github.com/thoughtbot/cocaine/pull/56
-      files = Dir[ File.join(@sources, "/**/*.java") ]
-      keys = 1.upto(files.size).map { |n| "{file#{n}}" }
-      argv = Hash[keys.zip(files)].merge(:classes => @classes)
-
-      line = Cocaine::CommandLine.new("javac", "-d :classes " << keys.map { |key| ":#{key}" }.join(" "))
-      line.run(argv)
-    rescue Cocaine::ExitStatusError => e
-      raise Error, "javac execution failed: #{e}"
-    rescue Cocaine::CommandNotFoundError => e
-      raise command_not_found("javac")
-    end
-    ### Exec class
 
     def create_ruby_classes
       java_classes = find_java_classes(@classes)

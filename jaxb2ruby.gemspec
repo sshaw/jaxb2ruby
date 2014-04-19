@@ -8,13 +8,13 @@ Gem::Specification.new do |s|
   s.version     = JAXB2Ruby::VERSION
   s.date        = Date.today
   s.platform    = "java"
-  s.summary     = "Generate Ruby objects from an XML schema using JAXB and JRuby"
+  s.summary     = "Generate pure Ruby objects from an XML schema using JAXB and JRuby"
   s.description =<<-DESC
     jaxb2ruby generates Java XML mappings via xjc, reads the resulting annotations, and passes the
     extracted info to an ERB template. This allows one to automatically map an XML schema to pure
-    Ruby classes using the mapping framework of their choice.
+    Ruby classes (i.e. classes that don't require JRuby) using the mapping framework of their choice.
 
-    Several templates are included: ROXML, HappyMapper and generic Ruby class.
+    Several templates are included: ROXML, HappyMapper and generic Ruby class (PORO).
   DESC
   s.authors     = ["Skye Shaw"]
   s.email       = "skye.shaw@gmail.com"

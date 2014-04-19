@@ -27,7 +27,7 @@ Generate pure Ruby objects from an XML schema using [JAXB](https://en.wikipedia.
 
     > gem install jaxb2ruby
 
-`jaxb2ruby` must be installed and ran under JRuby.
+`jaxb2ruby` must be installed and ran under JRuby. The generated classes *do not* depend on JRuby.
 
 ### Ruby Class Mappings
 
