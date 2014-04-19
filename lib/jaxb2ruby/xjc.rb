@@ -3,13 +3,13 @@ require "cocaine"
 
 module JAXB2Ruby
   class XJC  # :nodoc:
-    XJC_CONFIG = File.expand_path(__FILE__ + "/../../xjc/config.xjb")
+    CONFIG = File.join(File.dirname(__FILE__), "config.xjb")
 
     # https://github.com/thoughtbot/cocaine/issues/24
     Cocaine::CommandLine.runner = Cocaine::CommandLine::BackticksRunner.new
 
     def initialize(schema, options = {})
-      @schema  = schema
+      @schema = schema
       @options = options
       setup_tmpdirs
     end
@@ -34,7 +34,7 @@ module JAXB2Ruby
       options = @schema.end_with?(".wsdl") || @options[:wsdl] ? "-wsdl " : ""
       options << "-extension -npa -d :sources :schema -b :config"
       line = Cocaine::CommandLine.new("xjc", options)
-      line.run(:schema => @schema, :sources => @sources, :config => XJC_CONFIG)
+      line.run(:schema => @schema, :sources => @sources, :config => CONFIG)
     rescue Cocaine::ExitStatusError => e
       raise Error, "xjc execution failed: #{e}"
     rescue Cocaine::CommandNotFoundError => e
@@ -42,13 +42,9 @@ module JAXB2Ruby
     end
 
     def javac
-      # https://github.com/thoughtbot/cocaine/pull/56
-      files = Dir[ File.join(@sources, "/**/*.java") ]
-      keys = 1.upto(files.size).map { |n| "{file#{n}}" }
-      argv = Hash[keys.zip(files)].merge(:classes => @classes)
-
-      line = Cocaine::CommandLine.new("javac", "-d :classes " << keys.map { |key| ":#{key}" }.join(" "))
-      line.run(argv)
+      files = Dir[ File.join(@sources, "**/*.java") ]
+      line = Cocaine::CommandLine.new("javac", "-d :classes :files")
+      line.run(:classes => @classes, :files => files)
     rescue Cocaine::ExitStatusError => e
       raise Error, "javac execution failed: #{e}"
     rescue Cocaine::CommandNotFoundError => e

@@ -27,6 +27,6 @@ Gem::Specification.new do |s|
   s.license     = "MIT"
 
   s.add_dependency "activesupport", ">= 3.2"
-  s.add_dependency "cocaine", "~> 0.5", "!= 0.5.3"
+  s.add_dependency "cocaine", "~> 0.5.4"
   s.add_development_dependency "rake", "~> 10.0"
 end
