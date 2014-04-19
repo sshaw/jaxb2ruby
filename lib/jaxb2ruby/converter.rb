@@ -222,9 +222,5 @@ module JAXB2Ruby
       end
       ruby_classes
     end
-
-    def command_not_found(cmd)
-      JAXB2Ruby::Error.new("#{cmd} command not found, is it in your PATH enviornment variable?")
-    end
   end
 end

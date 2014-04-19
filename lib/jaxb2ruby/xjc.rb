@@ -50,5 +50,9 @@ module JAXB2Ruby
     rescue Cocaine::CommandNotFoundError => e
       raise command_not_found("javac")
     end
+
+    def command_not_found(cmd)
+      Error.new("#{cmd} command not found, is it in your PATH enviornment variable?")
+    end
   end
 end
