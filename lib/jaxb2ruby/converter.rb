@@ -198,9 +198,9 @@ module JAXB2Ruby
           next
         end
 
-        childopts = { :type => resolve_type(field) }
+        childopts = { :type => resolve_type(field), :accessor => field.name }
         #childopts[:type] = type # unless Array(type).first == "Object"
-        childname = field.name
+        childname = childopts[:accessor]
 
         if annot = field.get_annotation(javax.xml.bind.annotation.XmlElement.java_class)    ||
                    field.get_annotation(javax.xml.bind.annotation.XmlElementRef.java_class) ||  # shouldn't need this

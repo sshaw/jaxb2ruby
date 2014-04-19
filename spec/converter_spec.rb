@@ -68,16 +68,21 @@ describe JAXB2Ruby::Converter do
   end
 
   it "creates the right attributes for each class" do
-    classes = convert("address")
-    hash = class_hash(classes)
+    classes = class_hash(convert("address"))
+    classes["Address"].element.attributes.size.must_equal(2)
 
-    hash["Address"].element.attributes.size.must_equal(1)
-    attr = hash["Address"].element.attributes.first
+    hash = class_hash(classes["Address"].element.attributes)
+    attr = hash["PostCode"]
     attr.name.must_equal("PostCode")
     attr.accessor.must_equal("post_code")
     attr.type.must_equal("String")
 
-    hash["Recipient"].element.attributes.must_be_empty
+    attr = hash["State"]
+    attr.name.must_equal("State")
+    attr.accessor.must_equal("state_code")
+    attr.type.must_equal("String")
+
+    classes["Recipient"].element.attributes.must_be_empty
   end
 
   it "cretates predicate attribute readers for boolean elements" do

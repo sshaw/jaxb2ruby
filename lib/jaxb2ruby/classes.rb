@@ -47,7 +47,7 @@ module JAXB2Ruby
 
     def initialize(name, options = {})
       @name = name
-      @accessor = name.underscore
+      @accessor = (options[:accessor] || name).underscore
       @namespace = options[:namespace]
       @default = options[:default]
       @type = options[:type]
@@ -155,7 +155,7 @@ module JAXB2Ruby
     end
 
     def requires
-      @requires ||= @dependencies.map { |e| make_path(e.split("::")) }.sort
+      @requires ||= @dependencies.map { |e| make_path(e.split("::")) }.sort.uniq
     end
 
     private

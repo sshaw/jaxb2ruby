@@ -1,9 +1,9 @@
 # jaxb2ruby
 
-[![Build Status](https://travis-ci.org/sshaw/jaxb2ruby.png)](https://travis-ci.org/sshaw/jaxb2ruby)
+[![Build Status](https://travis-ci.org/sshaw/jaxb2ruby.svg)](https://travis-ci.org/sshaw/jaxb2ruby)
 [![Build Status](https://codeclimate.com/github/sshaw/jaxb2ruby.png)](https://codeclimate.com/github/sshaw/jaxb2ruby)
 
-Generate Ruby objects from an XML schema using [JAXB](https://en.wikipedia.org/wiki/Java_Architecture_for_XML_Binding) and JRuby
+Generate pure Ruby objects from an XML schema using [JAXB](https://en.wikipedia.org/wiki/Java_Architecture_for_XML_Binding) and JRuby
 
 <b>DO NOT USE, WORK IN PROGRESS</b>
 
@@ -22,6 +22,12 @@ Generate Ruby objects from an XML schema using [JAXB](https://en.wikipedia.org/w
         -v, --version                    jaxb2ruby version
 		-w, --wsdl                       Treat the schema as a WSDL
                                          Automatically set if the schema has a `.wsdl' extension
+
+### Instalation
+
+    > gem install jaxb2ruby
+
+`jaxb2ruby` must be installed and ran under JRuby.
 
 ### Ruby Class Mappings
 
