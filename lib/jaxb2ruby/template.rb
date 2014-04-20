@@ -14,7 +14,6 @@ module JAXB2Ruby
       # If it's not a named template assume it's a path
       path = PATHS[name] || name || DEFAULT
       @__erb = ERB.new(File.read(path), nil, "<>%-")
-      @version = JAXB2Ruby::VERSION
     rescue => e
       raise Error, "cannot load class template: #{e}"
     end
