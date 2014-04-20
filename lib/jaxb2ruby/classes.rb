@@ -47,9 +47,11 @@ module JAXB2Ruby
 
     def initialize(name, options = {})
       @name = name
-      # TODO: If this conflicts with a Java keyword it will start with an underscore
-      # TODO: ruby key words
+
       @accessor = (options[:accessor] || name).underscore
+      # If this conflicts with a Java keyword it will start with an underscore
+      @accessor.sub!(/\A_/, "")
+
       @namespace = options[:namespace]
       @default = options[:default]
       @type = options[:type]

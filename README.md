@@ -14,9 +14,11 @@ Generate pure Ruby objects from an XML schema using [JAXB](https://en.wikipedia.
         -c, --classes=MAP1[,MAP2,...]    XML Schema type to Ruby class mappings
                                          MAP can be a string in the form type=class or a YAML file of type/class pairs
         -h, --help                       Show this message
+        -I, --include=DIRECTORY          Add DIRECTORY to the load path, usefull for using custom template helpers
         -n, --namespace=MAP1[,MAP2,...]  XML namespace to ruby class mappings
                                          MAP can be a string in the form namespace=class or a YAML file of namespace/class pairs
         -o, --output=DIRECTORY           Directory to output the generated ruby classes, defaults to ruby
+        -q, --quiet                      Do not list classes as they're generated
         -t, --template=NAME              Template used to generate the ruby classes
                                          Can be a path to an ERB template or one of: roxml (default), happymapper, ruby
         -v, --version                    jaxb2ruby version
@@ -27,7 +29,7 @@ Generate pure Ruby objects from an XML schema using [JAXB](https://en.wikipedia.
 
     > gem install jaxb2ruby
 
-`jaxb2ruby` must be installed and ran under JRuby. The generated classes *do not* depend on JRuby.
+`jaxb2ruby` must be installed and ran under JRuby. The generated classes *will not* depend on JRuby.
 
 ### Ruby Class Mappings
 
