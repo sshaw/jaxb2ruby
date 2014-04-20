@@ -47,18 +47,13 @@ module JAXB2Ruby
 
     def initialize(name, options = {})
       @name = name
+      # TODO: If this conflicts with a Java keyword it will start with an underscore
+      # TODO: ruby key words
       @accessor = (options[:accessor] || name).underscore
       @namespace = options[:namespace]
       @default = options[:default]
       @type = options[:type]
-
       @required = !!options[:required]
-
-      # should have an access
-      if @type == :boolean && @accessor.start_with?("is_")
-        @accessor["is_"] = ""
-        @accessor << "?"
-      end
     end
 
     def required?
