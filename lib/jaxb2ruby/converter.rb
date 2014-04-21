@@ -80,6 +80,8 @@ module JAXB2Ruby
     end
 
     def translate_type(klass)
+      return "Object" if klass.java_kind_of?(java.lang.reflect.WildcardType)
+
       type = @typemap.java2ruby(klass.name)
       return type if type
       return "String" if klass.enum?
@@ -93,9 +95,10 @@ module JAXB2Ruby
       return :IDREF if field.annotation_present?(javax.xml.bind.annotation.XmlIDREF.java_class)
 
       annot = field.get_annotation(javax.xml.bind.annotation.XmlSchemaType.java_class)
-      return @typemap.schema2ruby(annot.name) if annot
+      return @typemap.schema2ruby(annot.name) if annot.respond_to?(:name)
 
-      # Very limited type checking here, should be good enough for what we deal with
+      # Limited type checking here (but still maybe too much? it's a tad ugly)
+      # should be good enough for List<JAXBElement<Object>> and its variants
       if field.type.name == "java.util.List"
         resolved_type = []
         type = field.generic_type
@@ -105,7 +108,7 @@ module JAXB2Ruby
 
           if type.java_kind_of?(java.lang.reflect.ParameterizedType)
             resolved_type << translate_type(type.actual_type_arguments.first)
-          # elsif type.java_kind_of?(java.lang.reflectype.WildcardType)
+          # elsif type.java_kind_of?(java.lang.reflect.WildcardType)
           #   type.get_upper_bounds.each do |lower|
           #   end
           #   type.get_lower_bounds.each do |upper|
@@ -146,9 +149,9 @@ module JAXB2Ruby
       nodes = { :attributes => [], :children => [] }
 
       klass.declared_fields.each do |field|
-        if field.annotation_present?(javax.xml.bind.annotation.XmlValue.java_class)
+        if field.annotation_present?(javax.xml.bind.annotation.XmlValue.java_class) || field.annotation_present?(javax.xml.bind.annotation.XmlMixed.java_class)
           nodes[:text] = true
-          next
+          next if field.annotation_present?(javax.xml.bind.annotation.XmlValue.java_class)
         end
 
         childopts = { :type => resolve_type(field), :accessor => field.name }

@@ -28,6 +28,7 @@ module JAXB2Ruby
       "ID" => :ID,
       "IDREF" => :IDREF,
       "anyType" => "Object",
+      "anyURI" => "String",
       "anySimpleType" => "Object",
       "base64Binary" => "String",
       "boolean" => :boolean,

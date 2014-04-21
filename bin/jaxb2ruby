@@ -26,7 +26,6 @@ def mapping_option(option)
   end
 end
 
-
 tmpl = nil
 outdir = "ruby"
 options = {}
@@ -75,6 +74,7 @@ abort parser.banner if schema.nil?
 begin
   template = Template.new(tmpl)
   ruby_classes = Converter.convert(schema, options)
+  puts "outputting classes to #{outdir}"
   ruby_classes.each do |klass|
     puts "generating: #{klass.path}"
     FileUtils.mkdir_p(File.join(outdir, klass.directory))

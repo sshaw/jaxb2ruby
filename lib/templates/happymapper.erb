@@ -30,7 +30,7 @@ class <%= @class.name %> <%= "< #{@class.superclass}" if @class.superclass %>
   <%- end -%>
 
   <% @class.element.attributes.each do |attr| %>
-      attribute :<%= attr.accessor %>, <%= attr.type == :boolean ? "Boolean" : attr.type %>, :tag => "@<%= attr.name %>"
+      attribute :<%= attr.accessor %>, <%= type_name(attr) %>, :tag => "@<%= attr.name %>"
   <% end %>
 end
 
