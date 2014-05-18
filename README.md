@@ -5,8 +5,6 @@
 
 Generate pure Ruby objects from an XML schema using [JAXB](https://en.wikipedia.org/wiki/Java_Architecture_for_XML_Binding) and JRuby
 
-<b>DO NOT USE, WORK IN PROGRESS</b>
-
 ### Usage
 
     > jaxb2ruby --help
@@ -79,3 +77,11 @@ Note that "plain 'ol Ruby classes" does not perform XML serialization.
 #### Rolling out your own templates
 
 TODO
+
+### Author
+
+Copyright (c) 2013-2014 Skye Shaw [sshaw AT gmail.com]
+
+### License
+
+Released under the MIT License: www.opensource.org/licenses/MIT
