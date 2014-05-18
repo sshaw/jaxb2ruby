@@ -9,7 +9,7 @@
 	<!-- QName, NOTATION -->
         <xs:element name="anyType" type="xs:anyType"/>
         <xs:element name="anySimpleType" type="xs:anySimpleType"/>
-        <!-- <xs:element name="any" type="xs:anyURI"/> -->	
+        <xs:element name="anyURI" type="xs:anyURI"/>
         <xs:element name="base64Binary" type="xs:base64Binary"/>
         <xs:element name="boolean" type="xs:boolean"/>
         <xs:element name="byte" type="xs:byte"/>

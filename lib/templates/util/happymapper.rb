@@ -8,6 +8,19 @@ def accessor_method(node)
   end
 end
 
+# HappyMapper quirk: we need to return false if there's no namespace, otherwise the parent element's
+# namespace will be used in XPath searches
+def namespace(ns)
+  ns.blank? ? "false" : %|"#{ns}"|
+end
+
 def type_name(node)
-  node.type == :boolean ? "Boolean" : node.type
+  case node.type
+    when :boolean
+      "Boolean"
+    when "Object"
+      "String"
+    else
+      node.type
+  end
 end

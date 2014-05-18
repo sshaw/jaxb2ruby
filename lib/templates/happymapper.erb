@@ -22,7 +22,7 @@ class <%= @class.name %> <%= "< #{@class.superclass}" if @class.superclass %>
 
   <%- @class.element.children.each do |e| -%>
     <% next if e.type == :ID || e.type == :IDREF %>
-    <%= accessor_method(e) %> :<%= e.accessor %>, <%= type_name(e) %>, :tag => "<%= e.name %>"<%= %|, :namespace => "#{e.namespace}"| unless e.namespace.to_s.empty? %>
+    <%= accessor_method(e) %> :<%= e.accessor %>, <%= type_name(e) %>, :tag => "<%= e.name %>", :namespace => <%= namespace(e.namespace) %>
   <%- end -%>
 
   <%- if @class.element.text? -%>
@@ -30,7 +30,7 @@ class <%= @class.name %> <%= "< #{@class.superclass}" if @class.superclass %>
   <%- end -%>
 
   <% @class.element.attributes.each do |attr| %>
-      attribute :<%= attr.accessor %>, <%= type_name(attr) %>, :tag => "@<%= attr.name %>"
+      attribute :<%= attr.accessor %>, <%= type_name(attr) %>, :tag => "@<%= attr.name %>", :namespace => <%= namespace(attr.namespace) %>
   <% end %>
 end
 

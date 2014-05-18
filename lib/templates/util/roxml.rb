@@ -5,7 +5,7 @@ def unsupported_type?(type)
 end
 
 def type_name(node)
-  name = unsupported_type?(node.type) ? "String" : node.type.dup
+  name = unsupported_type?(node.type) ? "" : node.type.dup
   # May be an attribute node
   if node.respond_to?(:array?) && node.array?
     name.prepend "["

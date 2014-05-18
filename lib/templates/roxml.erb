@@ -21,7 +21,9 @@ class <%= @class.name %> <%= "< #{@class.superclass}" if @class.superclass %>
   xml_name "<%= @class.element.name %>"
 
   <%- @class.element.children.each do |e| -%>
-    <%- if unsupported_type?(e.type) -%>
+    <% if e.array? %>
+      xml_accessor <%= accessor_name(e) %>, :as => <%= type_name(e) %>, :from => "<%= e.name %>", :required => <%= e.required? %>
+    <%- elsif unsupported_type?(e.type) -%>
       xml_accessor <%= accessor_name(e) %>, :from => "<%= e.name %>", :required => <%= e.required? %>
     <%- else -%>
       xml_accessor <%= accessor_name(e) %>, :as => <%= type_name(e) %>, :from => "<%= e.name %>", :required => <%= e.required? %>
