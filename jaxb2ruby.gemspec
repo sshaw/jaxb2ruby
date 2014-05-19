@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.version     = JAXB2Ruby::VERSION
   s.date        = Date.today
   s.platform    = "java"
-  s.summary     = "Generate pure Ruby objects from an XML schema using JAXB and JRuby"
+  s.summary     = "Generate pure Ruby classes from an XML schema using JAXB and JRuby"
   s.description =<<-DESC
     jaxb2ruby generates Java XML mappings via xjc, reads the resulting annotations, and passes the
     extracted info to an ERB template. This allows one to automatically map an XML schema to pure
