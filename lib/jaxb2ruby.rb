@@ -7,5 +7,9 @@ require "jaxb2ruby/converter"
 require "jaxb2ruby/template"
 
 module JAXB2Ruby
+  RUBY_PKG_SEP = "::"
+  JAVA_PKG_SEP = "."
+  JAVA_CLASS_SEP = "$"
+
   class Error < StandardError; end
 end

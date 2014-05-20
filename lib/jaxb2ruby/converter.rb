@@ -6,7 +6,7 @@ require "jaxb2ruby/xjc"
 require "jaxb2ruby/type_util"
 
 module JAXB2Ruby
-  class Converter
+  class Converter # :nodoc:
     XML_NULL = "\u0000"
     XML_ANNOT_DEFAULT = "##default"
 
@@ -129,7 +129,7 @@ module JAXB2Ruby
       element = extract_element(klass)
 
       dependencies = []
-      dependencies << type.parent_class if type.parent_class
+      #dependencies << type.parent_class if type.parent_class
 
       superclass = nil
       if klass.superclass.name != "java.lang.Object"
@@ -199,7 +199,7 @@ module JAXB2Ruby
       end
 
       name = klass.name if name.blank?
-      name = name.split("$").last # might be an inner class
+      name = name.split(JAVA_CLASS_SEP).last # might be an inner class
 
       # Should grab annot.prop_order
       # annot = klass.get_annotation(javax.xml.bind.annotation.XmlType.java_class)

@@ -8,29 +8,29 @@ describe JAXB2Ruby::Converter do
 
     hash = class_hash(classes)
     hash["Address"].must_be_instance_of(JAXB2Ruby::RubyClass)
-    hash["Address"].class.must_equal("Com::Example::Address")
+    hash["Address"].name.must_equal("Com::Example::Address")
     hash["Address"].module.must_equal("Com::Example")
-    hash["Address"].name.must_equal("Address")
+    hash["Address"].basename.must_equal("Address")
 
     hash["Recipient"].must_be_instance_of(JAXB2Ruby::RubyClass)
-    hash["Recipient"].class.must_equal("Com::Example::Recipient")
+    hash["Recipient"].name.must_equal("Com::Example::Recipient")
     hash["Recipient"].module.must_equal("Com::Example")
-    hash["Recipient"].name.must_equal("Recipient")
+    hash["Recipient"].basename.must_equal("Recipient")
     hash["Recipient"].superclass.must_be_nil
   end
 
   it "creates inner classes from complex anonymous types" do
     hash = class_hash(convert("types"))
-    hash["Types::NestedClass"].must_be_instance_of(JAXB2Ruby::RubyClass)
-    hash["Types::NestedClass"].class.must_equal("Com::Example::Types::Types::NestedClass")
-    hash["Types::NestedClass"].module.must_equal("Com::Example::Types")
-    hash["Types::NestedClass"].name.must_equal("Types::NestedClass")
+    hash["NestedClass"].must_be_instance_of(JAXB2Ruby::RubyClass)
+    hash["NestedClass"].name.must_equal("Com::Example::Types::Types::NestedClass")
+    hash["NestedClass"].module.must_equal("Com::Example::Types")
+    hash["NestedClass"].basename.must_equal("Types::NestedClass")
   end
 
   it "creates superclasses from complex extension bases" do
     hash = class_hash(convert("types"))
     hash["TextSubType"].must_be_instance_of(JAXB2Ruby::RubyClass)
-    hash["TextSubType"].class.must_equal("Com::Example::Types::TextSubType")
+    hash["TextSubType"].name.must_equal("Com::Example::Types::TextSubType")
     hash["TextSubType"].superclass.must_equal("Com::Example::Types::TextType")
   end
 
@@ -158,9 +158,9 @@ describe JAXB2Ruby::Converter do
     it "converts elements in the given namespace to the classes in the given module" do
       hash = class_hash(convert("address", :namespace => nsmap))
       hash["Address"].must_be_instance_of(JAXB2Ruby::RubyClass)
-      hash["Address"].class.must_equal("#{mod}::Address")
+      hash["Address"].name.must_equal("#{mod}::Address")
       hash["Address"].module.must_equal(mod)
-      hash["Address"].name.must_equal("Address")
+      hash["Address"].basename.must_equal("Address")
     end
   end
 

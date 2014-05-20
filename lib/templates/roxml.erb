@@ -11,7 +11,9 @@ require "<%= mod %>"
 
 <%= @class.module.map { |mod| "module #{mod}" }.join " " %>
 
-class <%= @class.name %> <%= "< #{@class.superclass}" if @class.superclass %>
+<%= @class.outter_class.map { |klass| "class #{klass}" }.join "; " %>
+
+class <%= @class.basename %> <%= "< #{@class.superclass}" if @class.superclass %>
   include ROXML
 
   <%# if @class.element.namespace -%>

@@ -11,7 +11,7 @@ def convert(xsd, options = {})
 end
 
 def class_hash(classes)
-  Hash[ classes.map { |klass| [ klass.name, klass ] } ]
+  Hash[ classes.map { |klass| [ klass.basename, klass ] } ]
 end
 
 def node_hash(element)

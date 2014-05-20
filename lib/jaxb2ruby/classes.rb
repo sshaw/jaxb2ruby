@@ -1,21 +1,24 @@
-module JAXB2Ruby
-  class ClassName < String
-    attr :class               # module + class
-    attr :name                # class
-    attr :module              # module
-    attr :parent_class        # if java inner class
+require "forwardable"
 
-    # Turn a java class name into a ruby class name, keeping inner classes inner
+module JAXB2Ruby
+  class ClassName < String  # :nodoc:
+    attr :module
+    attr :outter_class  # if java inner class, if any
+    attr :name          # module + outter_class + basename
+    attr :basename
+
+    # Turn a java class name into a ruby class name, with accessors for various parts
     def initialize(java_name, rubymod = nil)
-      pkg = java_name.split(".")
+      pkg = java_name.split(JAVA_PKG_SEP)
       pkg = rubymod ? [rubymod, ns2mod(pkg[-1])] : pkg.map { |part| ns2mod(part) }
 
-      @class = pkg.join("::")
-      @name = @class.demodulize.gsub("$", "::")
-      @module = rubymod || @class.deconstantize
-      @parent_class = sprintf "%s::%s", @module, @name.sub(/::\w+\Z/,"") if @class.gsub!("$", "::")
+      parts = pkg.pop.split(JAVA_CLASS_SEP)
+      @basename = parts.pop
+      @outter_class = parts.join(RUBY_PKG_SEP)
+      @module = rubymod || pkg.join(RUBY_PKG_SEP)
+      @name = [@module, @outter_class, @basename].reject(&:empty?).join(RUBY_PKG_SEP)
 
-      super @class
+      super @name
     end
 
     private
@@ -24,7 +27,7 @@ module JAXB2Ruby
     end
   end
 
-  class Namespace < String
+  class Namespace < String # :nodoc:
     counter = 0
     @@prefixes = Hash.new { |h,ns|  h[ns] = "ns#{counter+=1}".freeze }
 
@@ -115,32 +118,35 @@ module JAXB2Ruby
   end
 
   class RubyClass
-    attr :class
-    attr :element
+    extend Forwardable
+
     attr :name
     attr :module
+    attr :outter_class
     attr :superclass
+    attr :element
+
+    def_delegators :@type, :name, :basename, :to_s
 
     def initialize(type, element, dependencies = nil, superclass = nil)
-      @class = type
-      @name  = type.name
-      @module = type.module.dup
+      @type = type
+      @module = @type.module.dup
+      @outter_class = @type.outter_class.dup
       @element = element
       @dependencies = dependencies || []
       @superclass = superclass
 
-      @module.extend Enumerable
-      def @module.each(&block)
-        split("::").each(&block)
-      end
+      [@module, @outter_class].each do |v|
+        v.extend Enumerable
 
-      def @module.to_a
-        entries
+        def v.each(&block)
+          split(RUBY_PKG_SEP).each(&block)
+        end
       end
     end
 
     def filename
-      "#{@name.underscore}.rb"
+      "#{basename.underscore}.rb"
     end
 
     def directory
@@ -152,7 +158,7 @@ module JAXB2Ruby
     end
 
     def requires
-      @requires ||= @dependencies.map { |e| make_path(e.split("::")) }.sort.uniq
+      @requires ||= @dependencies.map { |e| make_path(e.split(RUBY_PKG_SEP)) }.sort.uniq
     end
 
     private

@@ -11,7 +11,7 @@ require "<%= mod %>"
 
 <%= @class.module.map { |mod| "module #{mod}" }.join " " %>
 
-class <%= @class.name %> <%= "< #{@class.superclass}" if @class.superclass %>
+class <%= @class.basename %> <%= "< #{@class.superclass}" if @class.superclass %>
   include HappyMapper
 
   <%- if @class.element.namespace -%>
