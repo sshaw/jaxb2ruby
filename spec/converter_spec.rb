@@ -24,7 +24,7 @@ describe JAXB2Ruby::Converter do
     hash["NestedClass"].must_be_instance_of(JAXB2Ruby::RubyClass)
     hash["NestedClass"].name.must_equal("Com::Example::Types::Types::NestedClass")
     hash["NestedClass"].module.must_equal("Com::Example::Types")
-    hash["NestedClass"].basename.must_equal("Types::NestedClass")
+    hash["NestedClass"].basename.must_equal("NestedClass")
   end
 
   it "creates superclasses from complex extension bases" do
@@ -88,7 +88,7 @@ describe JAXB2Ruby::Converter do
   it "detects classes that are a root xml element" do
     classes = class_hash(convert("types"))
     classes["Types"].element.root?.must_equal(true)
-    classes["Types::NestedClass"].element.root?.must_equal(false)
+    classes["NestedClass"].element.root?.must_equal(false)
   end
 
   it "detects types that are nillable" do

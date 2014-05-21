@@ -120,7 +120,6 @@ module JAXB2Ruby
   class RubyClass
     extend Forwardable
 
-    attr :name
     attr :module
     attr :outter_class
     attr :superclass

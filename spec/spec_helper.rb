@@ -11,7 +11,9 @@ def convert(xsd, options = {})
 end
 
 def class_hash(classes)
-  Hash[ classes.map { |klass| [ klass.basename, klass ] } ]
+  # classes can be a Node or a RubyClass
+  pairs = classes.map { |klass| [ klass.respond_to?(:basename) ? klass.basename : klass.name, klass ] }
+  Hash[ pairs ]
 end
 
 def node_hash(element)
