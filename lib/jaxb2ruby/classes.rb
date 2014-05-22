@@ -129,17 +129,19 @@ module JAXB2Ruby
 
     def initialize(type, element, dependencies = nil, superclass = nil)
       @type = type
-      @module = @type.module.dup
-      @outter_class = @type.outter_class.dup
       @element = element
       @dependencies = dependencies || []
       @superclass = superclass
 
+      @module = @type.module.dup unless @type.module.empty?
+      @outter_class = @type.outter_class.dup unless @type.outter_class.empty?
+
       [@module, @outter_class].each do |v|
         v.extend Enumerable
 
+        # v may be NilClass
         def v.each(&block)
-          split(RUBY_PKG_SEP).each(&block)
+          ( nil? ? [] : split(RUBY_PKG_SEP) ).each(&block)
         end
       end
     end
@@ -152,10 +154,15 @@ module JAXB2Ruby
       File.dirname(path)
     end
 
+    # This class's path, for passing to +require+.
+    # <code>Foo::Bar::OneTwo</code> will be turned into <code>foo/bar/one_two</code>.
+    #
     def path
-      @path ||= make_path(@module.to_a.push(filename))
+      @path ||= make_path(@module.to_a.concat(outter_class.to_a).push(filename))
     end
 
+    # Paths for all of this class's dependencies, for passing to +require+.
+    #
     def requires
       @requires ||= @dependencies.map { |e| make_path(e.split(RUBY_PKG_SEP)) }.sort.uniq
     end

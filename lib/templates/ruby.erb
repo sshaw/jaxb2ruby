@@ -10,7 +10,9 @@ require "<%= mod %>"
 
 <%= @class.module.map { |mod| "module #{mod}" }.join " " %>
 
-class <%= @class.name %> <%= "< #{@class.superclass}" if @class.superclass %>
+<%= @class.outter_class.map { |klass| "class #{klass}" }.join "; " %>
+
+class <%= @class.basename %> <%= "< #{@class.superclass}" if @class.superclass %>
   <%- if @class.element.children.any? %>
       # Elements
     <%- order[@class.element.children].each do |attr| -%>
@@ -41,5 +43,7 @@ class <%= @class.name %> <%= "< #{@class.superclass}" if @class.superclass %>
     sprintf "#<%%s:0x%x <%= nodes.map { |node| "@#{accessor[node]}=%s" }.join(", ") %>>", self.class.name, object_id, <%= nodes.map { |node| "@#{accessor[node]}.inspect" }.join(", ") %>
   end
 end
+
+<%= @class.outter_class.map { "end" }.join " " %>
 
 <%= @class.module.map { "end" }.join " " %>

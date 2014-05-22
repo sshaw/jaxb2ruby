@@ -11,12 +11,15 @@ describe JAXB2Ruby::Converter do
     hash["Address"].name.must_equal("Com::Example::Address")
     hash["Address"].module.must_equal("Com::Example")
     hash["Address"].basename.must_equal("Address")
+    hash["Address"].outter_class.must_be_nil
+    hash["Address"].superclass.must_be_nil
 
     hash["Recipient"].must_be_instance_of(JAXB2Ruby::RubyClass)
     hash["Recipient"].name.must_equal("Com::Example::Recipient")
     hash["Recipient"].module.must_equal("Com::Example")
     hash["Recipient"].basename.must_equal("Recipient")
     hash["Recipient"].superclass.must_be_nil
+    hash["Recipient"].outter_class.must_be_nil
   end
 
   it "creates inner classes from complex anonymous types" do
@@ -24,6 +27,7 @@ describe JAXB2Ruby::Converter do
     hash["NestedClass"].must_be_instance_of(JAXB2Ruby::RubyClass)
     hash["NestedClass"].name.must_equal("Com::Example::Types::Types::NestedClass")
     hash["NestedClass"].module.must_equal("Com::Example::Types")
+    hash["NestedClass"].outter_class.must_equal("Types")
     hash["NestedClass"].basename.must_equal("NestedClass")
   end
 

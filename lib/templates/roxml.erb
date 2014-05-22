@@ -10,7 +10,6 @@ require "<%= mod %>"
 <%- end -%>
 
 <%= @class.module.map { |mod| "module #{mod}" }.join " " %>
-
 <%= @class.outter_class.map { |klass| "class #{klass}" }.join "; " %>
 
 class <%= @class.basename %> <%= "< #{@class.superclass}" if @class.superclass %>
@@ -45,4 +44,5 @@ class <%= @class.basename %> <%= "< #{@class.superclass}" if @class.superclass %
   <% end %>
 end
 
+<%= @class.outter_class.map { "end" }.join " " %>
 <%= @class.module.map { "end" }.join " " %>

@@ -76,7 +76,15 @@ Note that "plain 'ol Ruby classes" does not perform XML serialization.
 
 #### Rolling out your own templates
 
-TODO
+Use the `-t` option to specify the path to your template. This *must* be a path else it will be interpreted as a [jaxb2ruby template](#Code-Templates).
+Two variables will be provided to your template:
+
+1. `@class`, an instance of `RubyClass` (http://ruby-doc.org/gems/docs/j/jaxb2ruby-0.0.1/JAXB2Ruby/RubyClass.html)
+2. `VERSION` the version of `jaxb2ruby`
+
+See `lib/templates` for some examples.
+
+You can use helper functions in your templates by providing the helper file's directory to the `-I` option.
 
 ### TODO
 
