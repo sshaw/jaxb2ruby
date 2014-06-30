@@ -69,7 +69,7 @@ Namespace mappings have a lower precedence than type mappings.
 or [create your own](#rolling-out-your-own-templates). Use the `-t` option to specify the desired template, they are:
 
 * `roxml` the default ([ROXML](https://github.com/Empact/roxml))
-* `happymapper` ([HappyMapper](https://github.com/jnunemaker/happymapper))
+* `happymapper` ([Nokogiri HappyMapper](https://github.com/dam5s/happymapper))
 * `ruby` - plain 'ol Ruby classes
 
 Note that "plain 'ol Ruby classes" does not perform XML serialization.
@@ -89,6 +89,7 @@ You can use helper functions in your templates by providing the helper file's di
 ### TODO
 
 * Qualified namespaces i.e., elementFormDefault="qualified"
+* Don't treat XML Schema types as elements
 
 ### Author
 
