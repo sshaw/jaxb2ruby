@@ -90,6 +90,7 @@ You can use helper functions in your templates by providing the helper file's di
 
 * Qualified namespaces i.e., elementFormDefault="qualified"
 * Don't treat XML Schema types as elements
+* Circular dependencies, currently can be resolved by manually adding forward declarations
 
 ### Author
 

@@ -15,8 +15,9 @@ require "<%= mod %>"
 class <%= @class.basename %> <%= "< #{@class.superclass}" if @class.superclass %>
   include HappyMapper
 
-  <%- if @class.element.namespace -%>
-    namespace "<%= @class.element.namespace %>"
+  <%- if @class.element.root? && @class.element.namespace -%>
+    register_namespace "<%= @class.element.namespace.prefix %>", "<%= @class.element.namespace.name %>"
+    namespace "<%= @class.element.namespace.prefix %>"
   <%- end -%>
 
   tag "<%= @class.element.name %>"
@@ -31,7 +32,7 @@ class <%= @class.basename %> <%= "< #{@class.superclass}" if @class.superclass %
   <%- end -%>
 
   <% @class.element.attributes.each do |attr| %>
-      attribute :<%= attr.accessor %>, <%= type_name(attr) %>, :tag => "@<%= attr.name %>", :namespace => <%= namespace(attr.namespace) %>
+      attribute :<%= attr.accessor %>, <%= type_name(attr) %>, :tag => "<%= attr.name %>", :namespace => <%= namespace(attr.namespace) %>
   <% end %>
 end
 
