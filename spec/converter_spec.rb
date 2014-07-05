@@ -43,11 +43,13 @@ describe JAXB2Ruby::Converter do
 
     hash = class_hash(classes)
     hash["Address"].element.must_be_instance_of(JAXB2Ruby::Element)
-    hash["Address"].element.name.must_equal("Address")
+    hash["Address"].element.name.must_match(/\Ans\d+:Address\z/)
+    hash["Address"].element.local_name.must_equal("Address")
     hash["Address"].element.namespace.must_equal("http://example.com")
 
     hash["Recipient"].element.must_be_instance_of(JAXB2Ruby::Element)
-    hash["Recipient"].element.name.must_equal("Recipient")
+    hash["Recipient"].element.local_name.must_equal("Recipient")
+    hash["Recipient"].element.name.must_match(/\Ans\d+:Recipient\z/)
   end
 
   it "creates the right child elements for each class' element" do
@@ -78,11 +80,13 @@ describe JAXB2Ruby::Converter do
     hash = class_hash(classes["Address"].element.attributes)
     attr = hash["PostCode"]
     attr.name.must_equal("PostCode")
+    attr.local_name.must_equal("PostCode")
     attr.accessor.must_equal("post_code")
     attr.type.must_equal("String")
 
     attr = hash["State"]
     attr.name.must_equal("State")
+    attr.local_name.must_equal("State")
     attr.accessor.must_equal("state_code")
     attr.type.must_equal("String")
 

@@ -44,18 +44,21 @@ module JAXB2Ruby
   class Node
     attr :type
     attr :name
+    attr :local_name
     attr :namespace
     attr :accessor
     attr :default
 
     def initialize(name, options = {})
-      @name = name
+      @name = @local_name = name
 
       @accessor = (options[:accessor] || name).underscore
       # If this conflicts with a Java keyword it will start with an underscore
       @accessor.sub!(/\A_/, "")
 
       @namespace = options[:namespace]
+      @name = sprintf "%s:%s", @namespace.prefix, @name if @namespace
+
       @default = options[:default]
       @type = options[:type]
       @required = !!options[:required]
