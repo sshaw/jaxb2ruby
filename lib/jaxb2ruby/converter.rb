@@ -67,7 +67,8 @@ module JAXB2Ruby
     end
 
     def extract_namespace(annot)
-      Namespace.new(annot.namespace) unless annot.namespace == XML_ANNOT_DEFAULT
+      ns = annot.namespace
+      Namespace.new(ns) unless ns.empty? or ns == XML_ANNOT_DEFAULT
     end
 
     def find_namespace(klass)
@@ -160,7 +161,7 @@ module JAXB2Ruby
         childname = childopts[:accessor]
 
         if annot = field.get_annotation(javax.xml.bind.annotation.XmlElement.java_class)    ||
-                   field.get_annotation(javax.xml.bind.annotation.XmlElementRef.java_class) ||  # shouldn't need this
+                   field.get_annotation(javax.xml.bind.annotation.XmlElementRef.java_class) ||
                    field.get_annotation(javax.xml.bind.annotation.XmlAttribute.java_class)
 
           childopts[:namespace] = extract_namespace(annot)
@@ -200,7 +201,6 @@ module JAXB2Ruby
 
       name = klass.name if name.blank?
       name = name.split(JAVA_CLASS_SEP).last # might be an inner class
-
       # Should grab annot.prop_order
       # annot = klass.get_annotation(javax.xml.bind.annotation.XmlType.java_class)
       # annot.prop_order are java props here we have element names
