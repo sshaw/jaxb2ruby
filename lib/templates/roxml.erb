@@ -15,9 +15,7 @@ require "<%= mod %>"
 class <%= @class.basename %> <%= "< #{@class.superclass}" if @class.superclass %>
   include ROXML
 
-  <%# if @class.element.namespace -%>
-    #xml_namespaces <%# @class.element.namespace.prefix %> => "<%= @class.element.namespace %>"
-  <%#- end -%>
+  <%= namespace_map(@class) %>
 
   xml_name "<%= @class.element.name %>"
 

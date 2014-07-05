@@ -57,7 +57,7 @@ module JAXB2Ruby
       @accessor.sub!(/\A_/, "")
 
       @namespace = options[:namespace]
-      @name = sprintf "%s:%s", @namespace.prefix, @name if @namespace
+      @name = sprintf "%s:%s", @namespace.prefix, @local_name if @namespace
 
       @default = options[:default]
       @type = options[:type]
