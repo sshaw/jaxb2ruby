@@ -15,16 +15,19 @@ require "<%= mod %>"
 class <%= @class.basename %> <%= "< #{@class.superclass}" if @class.superclass %>
   include HappyMapper
 
+  <%- [@class.element].concat(@class.element.children).map { |e| e.namespace }.compact.uniq.each do |ns| -%>
+    register_namespace "<%= ns.prefix %>", "<%= ns %>"
+  <%- end -%>
+
   <%- if @class.element.root? && @class.element.namespace -%>
-    register_namespace "<%= @class.element.namespace.prefix %>", "<%= @class.element.namespace.name %>"
     namespace "<%= @class.element.namespace.prefix %>"
   <%- end -%>
 
-  tag "<%= @class.element.name %>"
+  tag "<%= @class.element.local_name %>"
 
   <%- @class.element.children.each do |e| -%>
     <% next if e.type == :ID || e.type == :IDREF %>
-    <%= accessor_method(e) %> :<%= e.accessor %>, <%= type_name(e) %>, :tag => "<%= e.name %>", :namespace => <%= namespace(e.namespace) %>
+    <%= accessor_method(e) %> :<%= e.accessor %>, <%= type_name(e) %>, :tag => "<%= e.local_name %>", :namespace => <%= namespace(e.namespace) %>
   <%- end -%>
 
   <%- if @class.element.text? -%>
@@ -32,7 +35,7 @@ class <%= @class.basename %> <%= "< #{@class.superclass}" if @class.superclass %
   <%- end -%>
 
   <% @class.element.attributes.each do |attr| %>
-      attribute :<%= attr.accessor %>, <%= type_name(attr) %>, :tag => "<%= attr.name %>", :namespace => <%= namespace(attr.namespace) %>
+      attribute :<%= attr.accessor %>, <%= type_name(attr) %>, :tag => "<%= attr.local_name %>", :namespace => <%= namespace(attr.namespace) %>
   <% end %>
 end
 

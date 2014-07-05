@@ -8,10 +8,10 @@ def accessor_method(node)
   end
 end
 
-# HappyMapper quirk: we need to return false if there's no namespace, otherwise the parent element's
+# HappyMapper quirk: we need to return nil if there's no namespace, otherwise the parent element's
 # namespace will be used in XPath searches
 def namespace(ns)
-  ns.blank? ? "false" : %|"#{ns}"|
+  ns.blank? ? "nil" : %|"#{ns.prefix}"|
 end
 
 def type_name(node)

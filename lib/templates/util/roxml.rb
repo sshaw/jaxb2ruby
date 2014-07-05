@@ -27,4 +27,3 @@ def accessor_name(node)
   name << "?" if node.type == :boolean
   name
 end
-

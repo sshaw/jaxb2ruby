@@ -68,7 +68,7 @@ module JAXB2Ruby
 
     def extract_namespace(annot)
       ns = annot.namespace
-      Namespace.new(ns) unless ns.empty? or ns == XML_ANNOT_DEFAULT
+      Namespace.new(ns) unless ns.blank? or ns == XML_ANNOT_DEFAULT
     end
 
     def find_namespace(klass)

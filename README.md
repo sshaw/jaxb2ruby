@@ -65,8 +65,9 @@ Namespace mappings have a lower precedence than type mappings.
 
 ### Code Templates
 
-`jaxb2ruby` uses ERB templates to create Ruby classes. You can use one of the included templates
-or [create your own](#rolling-out-your-own-templates). Use the `-t` option to specify the desired template, they are:
+`jaxb2ruby` uses ERB templates to create Ruby classes. You can use one of the bundled templates
+or [create your own](#rolling-out-your-own-templates). Use the `-t` option to specify the path to a custom
+template or one of the following bundled ones:
 
 * `roxml` the default ([ROXML](https://github.com/Empact/roxml))
 * `happymapper` ([Nokogiri HappyMapper](https://github.com/dam5s/happymapper))
@@ -88,7 +89,6 @@ You can use helper functions in your templates by providing the helper file's di
 
 ### TODO
 
-* Qualified namespaces i.e., elementFormDefault="qualified"
 * Don't treat XML Schema types as elements
 * Circular dependencies, currently can be resolved by manually adding forward declarations
 
