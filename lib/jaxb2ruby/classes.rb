@@ -60,31 +60,12 @@ module JAXB2Ruby
       @name = sprintf "%s:%s", @namespace.prefix, @local_name if @namespace
 
       @default = options[:default]
-      @type = options[:type]
       @required = !!options[:required]
-    end
+      @type = options[:type]
 
-    def required?
-      @required
-    end
-  end
-
-  class Attribute < Node; end
-
-  # TODO: nillable
-  class Element < Node
-    attr :children
-    attr :attributes
-
-    def initialize(name, options = {})
-      super
+      # TODO: this isn't used. Future plans?
       @array = !!options[:array]
-      @text = !!options[:text]
-      @root = !!options[:root]
-      @nillable = !!options[:nillable]
       @hash = false
-      @children = options[:children] || []
-      @attributes = options[:attributes] || []
 
       # Uhhhh, I think this might need some revisiting, esp. with xsd:enumeration
       if @type.is_a?(Array)
@@ -99,6 +80,34 @@ module JAXB2Ruby
       end
     end
 
+    def hash?
+      @hash
+    end
+
+    def array?
+      @array
+    end
+
+    def required?
+      @required
+    end
+  end
+
+  class Attribute < Node; end
+
+  class Element < Node
+    attr :children
+    attr :attributes
+
+    def initialize(name, options = {})
+      super
+      @text = !!options[:text]
+      @root = !!options[:root]
+      @nillable = !!options[:nillable]
+      @children = options[:children] || []
+      @attributes = options[:attributes] || []
+    end
+
     def nillable?
       @nillable
     end
@@ -109,14 +118,6 @@ module JAXB2Ruby
 
     def text?
       @text
-    end
-
-    def hash?
-      @hash
-    end
-
-    def array?
-      @array
     end
   end
 
