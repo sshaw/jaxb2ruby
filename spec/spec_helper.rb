@@ -12,10 +12,10 @@ end
 
 def class_hash(classes)
   # classes can be a Node or a RubyClass
-  pairs = classes.map { |klass| [ klass.respond_to?(:basename) ? klass.basename : klass.name, klass ] }
+  pairs = classes.map { |klass| [ klass.respond_to?(:basename) ? klass.basename : klass.local_name, klass ] }
   Hash[ pairs ]
 end
 
 def node_hash(element)
-  Hash[ (element.children + element.attributes).map { |node| [node.name, node] } ]
+  Hash[ (element.children + element.attributes).map { |node| [node.local_name, node] } ]
 end

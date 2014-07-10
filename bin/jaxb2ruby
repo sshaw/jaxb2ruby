@@ -19,7 +19,7 @@ def mapping_option(option)
       end
     else
       url, klass = opt.split("=", 2)
-      abort "mapping option invalid: #{opt}" if klass.nil? or klass.empty?
+      abort "mapping option invalid: #{opt}" if klass.nil? or klass.strip.empty?
       cfg[url] = klass
     end
     cfg

@@ -19,7 +19,7 @@ module JAXB2Ruby
       @xjc = XJC.new(schema, :wsdl => !!options[:wsdl])
 
       @namespace = options[:namespace] || {}
-      raise ArgumentError, "namespace mapping must be a Hash" unless Hash === @namespace
+      raise ArgumentError, "namespace mapping must be a Hash" unless @namespace.is_a?(Hash)
 
       @typemap = TypeUtil.new(options[:typemap])
     end
@@ -72,21 +72,24 @@ module JAXB2Ruby
     end
 
     def find_namespace(klass)
-      annot = klass.get_annotation(javax.xml.bind.annotation.XmlRootElement.java_class) || klass.get_annotation(javax.xml.bind.annotation.XmlType.java_class)
+      annot = klass.annotation(javax.xml.bind.annotation.XmlRootElement.java_class) || klass.annotation(javax.xml.bind.annotation.XmlType.java_class)
       return unless annot
 
+      # if klass is an inner class the namespace will be on the outter class (enclosing_class).
       annot.namespace == XML_ANNOT_DEFAULT && klass.enclosing_class ?
         find_namespace(klass.enclosing_class) :
         annot.namespace
     end
 
     def translate_type(klass)
+      # Won't work for extract_class() as it expects an instance but this should be split anyways
       return "Object" if klass.java_kind_of?(java.lang.reflect.WildcardType)
 
       type = @typemap.java2ruby(klass.name)
       return type if type
       return "String" if klass.enum?
 
+      # create_class_name(klass)
       modname = @namespace[find_namespace(klass)]
       ClassName.new(klass.name, modname)
     end
@@ -125,7 +128,10 @@ module JAXB2Ruby
       translate_type(field.type)
     end
 
+    # Create a RubyClass for the given Java class.
     def extract_class(klass)
+      # Here we expect type to be a ClassName but translate_type can return a String!
+      # type = create_class_name(klass)
       type = translate_type(klass)
       element = extract_element(klass)
 
@@ -134,19 +140,20 @@ module JAXB2Ruby
 
       superclass = nil
       if klass.superclass.name != "java.lang.Object"
+        # create_class_name(klass.superclass)
         superclass = translate_type(klass.superclass)
         dependencies << superclass
       end
 
-      # If a node's type isn't predefined, it must be an XML mapped class
       (element.children + element.attributes).each do |node|
-        # TODO: inner classes should be added to their outter class?
+        # If a node's type isn't predefined, it must be an XML mapped class
         dependencies << node.type if !@typemap.schema_ruby_types.include?(node.type)
       end
 
       RubyClass.new(type, element, dependencies, superclass)
     end
 
+    # Create elements and attributes from the given Java class' fields
     def extract_elements_nodes(klass)
       nodes = { :attributes => [], :children => [] }
 
@@ -186,6 +193,7 @@ module JAXB2Ruby
       nodes
     end
 
+    # Create an element from a Java class, turning its fields into elements and attributes
     def extract_element(klass)
       options = extract_elements_nodes(klass)
 
@@ -214,15 +222,15 @@ module JAXB2Ruby
       # Skip Enum for now, maybe forever!
       # TODO: make sure this is a legit class else we can get a const error.
       # For example, if someone uses a namespace that xjc translates into a /javax?/ package
-      !klass.java_class.enum? && klass.java_class.annotation_present?(javax.xml.bind.annotation.XmlType.java_class)
+      !klass.enum? && klass.annotation_present?(javax.xml.bind.annotation.XmlType.java_class)
     end
 
     def extract_classes(java_classes)
       ruby_classes = []
       java_classes.each do |name|
-        klass = Java.send(name)
+        klass = Java.send(name).java_class.to_java
         next unless valid_class?(klass)
-        ruby_classes << extract_class(klass.new.get_class)
+        ruby_classes << extract_class(klass)
       end
       ruby_classes
     end

@@ -32,11 +32,49 @@ Generate pure Ruby classes from an XML schema using [JAXB](https://en.wikipedia.
 
 #### XML Schema Built-in Types
 
-XML Schema types will be mapped to the following Ruby types:
-
-TODO
-
+Certain XML schema types are converted to `Symbol`s.
 You can specify your own XML Schema to Ruby type mapping(s) via the `-c` option.
+
+<table>
+<thead>
+<tr><th>XML Schema Type</th><th>Ruby</th></tr>
+</thead>
+<tbody>
+<tr><td>anySimpleType</td><td>Object</td></tr>
+<tr><td>anyType</td><td>Object</td></tr>
+<tr><td>anyURI</td><td>String</td></tr>
+<tr><td>base64Binary</td><td>String</td></tr>
+<tr><td>boolean</td><td>:boolean</td></tr>
+<tr><td>byte</td><td>Integer</td></tr>
+<tr><td>date</td><td>Date</td></tr>
+<tr><td>dateTime</td><td>DateTime</td></tr>
+<tr><td>decimal</td><td>Float</td></tr>
+<tr><td>double</td><td>Float</td></tr>
+<tr><td>duration</td><td>String</td></tr>
+<tr><td>float</td><td>Float</td></tr>
+<tr><td>gDay</td><td>String</td></tr>
+<tr><td>gMonth</td><td>String</td></tr>
+<tr><td>gMonthDay</td><td>String</td></tr>
+<tr><td>gYear</td><td>String</td></tr>
+<tr><td>gYearMonth</td><td>String</td></tr>
+<tr><td>hexBinary</td><td>String</td></tr>
+<tr><td>ID</td><td>:ID</td></tr>
+<tr><td>IDREF</td><td>:IDREF</td></tr>
+<tr><td>int</td><td>Integer</td></tr>
+<tr><td>integer</td><td>Integer</td></tr>
+<tr><td>long</td><td>Integer</td></tr>
+<tr><td>NCName</td><td>String</td></tr>
+<tr><td>nonNegativeInteger</td><td>Integer</td></tr>
+<tr><td>nonPositiveInteger</td><td>Integer</td></tr>
+<tr><td>short</td><td>Integer</td></tr>
+<tr><td>string</td><td>String</td></tr>
+<tr><td>time</td><td>Time</td></tr>
+<tr><td>unsignedByte</td><td>Integer</td></tr>
+<tr><td>unsignedInt</td><td>Integer</td></tr>
+<tr><td>unsignedLong</td><td>Integer</td></tr>
+<tr><td>unsignedShort</td><td>Integer</td></tr>
+</tbody>
+</table>
 
 #### XML Schema Complex Types
 
@@ -89,6 +127,8 @@ You can use helper functions in your templates by providing the helper file's di
 
 ### TODO
 
+* Map java.util.Hash
+* Do something with org.w3c.dom.*
 * Don't treat XML Schema types as elements
 * Circular dependencies, currently can be resolved by manually adding forward declarations
 

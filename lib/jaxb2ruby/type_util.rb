@@ -24,7 +24,7 @@ module JAXB2Ruby
       "short" => "short"
     }.freeze
 
-    SCHEMA_TO_RUBY = {
+    SCHEMA_TO_RUBY = { #Hash.new("String").merge(
       "ID" => :ID,
       "IDREF" => :IDREF,
       "anyType" => "Object",
@@ -47,6 +47,10 @@ module JAXB2Ruby
       "hexBinary" => "String",
       "int" => "Integer",
       "integer" => "Integer",
+      "integer" => "Integer",
+      "NCName" => "String",
+      "nonNegativeInteger" => "Integer",
+      "nonPositiveInteger" => "Integer",
       "long" => "Integer",
       "short" => "Integer",
       "string" => "String",
