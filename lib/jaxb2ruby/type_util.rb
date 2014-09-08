@@ -52,6 +52,7 @@ module JAXB2Ruby
       "nonNegativeInteger" => "Integer",
       "nonPositiveInteger" => "Integer",
       "long" => "Integer",
+      "positiveInteger" => "Integer",
       "short" => "Integer",
       "string" => "String",
       "time" => "Time",
