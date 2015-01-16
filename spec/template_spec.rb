@@ -12,7 +12,7 @@ describe JAXB2Ruby::Template do
     # use the template's path as the template
     File.stub :read, lambda { |path| path } do
       t = JAXB2Ruby::Template.new
-      t.build(nil).must_equal(JAXB2Ruby::Template::DEFAULT)
+      assert_equal_modulo_comments JAXB2Ruby::Template::DEFAULT, t.build(nil)
     end
   end
 
@@ -22,7 +22,7 @@ describe JAXB2Ruby::Template do
     file.close
 
     t = JAXB2Ruby::Template.new(file.path)
-    t.build(nil).must_equal("DATA")
+    assert_equal_modulo_comments "DATA", t.build(nil)
   end
 
   it "raises an error if the template can't be read" do
@@ -36,7 +36,7 @@ describe JAXB2Ruby::Template do
 
     klass = Struct.new(:name).new("sshaw")
     t = JAXB2Ruby::Template.new(file.path)
-    t.build(klass).must_equal("sshaw")
+    assert_equal_modulo_comments "sshaw", t.build(klass)
   end
 
   describe "known templates" do
