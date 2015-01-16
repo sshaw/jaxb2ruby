@@ -19,3 +19,7 @@ end
 def node_hash(element)
   Hash[ (element.children + element.attributes).map { |node| [node.local_name, node] } ]
 end
+
+def assert_equal_modulo_comments(a, b)
+  assert_equal a, b.gsub(/^#.*\n/, '')
+end
