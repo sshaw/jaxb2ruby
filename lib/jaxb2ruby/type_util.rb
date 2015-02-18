@@ -22,7 +22,7 @@ module JAXB2Ruby
       "java.lang.Long" => "long",
       "long" => "long",
       "short" => "short"
-    }.freeze
+    }
 
     SCHEMA_TO_RUBY = Hash.new("String").merge(
       "ID" => :ID,
