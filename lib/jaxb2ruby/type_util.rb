@@ -24,7 +24,7 @@ module JAXB2Ruby
       "short" => "short"
     }
 
-    SCHEMA_TO_RUBY = Hash.new("String").merge(
+    SCHEMA_TO_RUBY = {
       "ID" => :ID,
       "IDREF" => :IDREF,
       "NCName" => "String",
@@ -61,7 +61,7 @@ module JAXB2Ruby
       "unsignedInt" => "Integer",
       "unsignedLong" => "Integer",
       "unsignedShort" => "Integer"
-    )
+    }
 
     def initialize(schema2ruby)
       @schema2ruby = SCHEMA_TO_RUBY.merge(schema2ruby || {})
