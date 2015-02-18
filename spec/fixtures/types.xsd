@@ -6,7 +6,7 @@
   <xs:element name="Types">
     <xs:complexType>
       <xs:sequence>
-	<!-- QName, NOTATION -->
+	<!-- NOTATION -->
         <xs:element name="anyType" type="xs:anyType"/>
         <xs:element name="anySimpleType" type="xs:anySimpleType"/>
         <xs:element name="anyURI" type="xs:anyURI"/>
@@ -30,13 +30,19 @@
         <xs:element name="IDREF" type="xs:IDREF"/>
         <xs:element name="int" type="xs:int"/>
         <xs:element name="integer" type="xs:integer"/>
+        <xs:element name="NCName" type="xs:NCName"/>
+        <xs:element name="nonNegativeInteger" type="xs:nonNegativeInteger"/>
+        <xs:element name="nonPositiveInteger" type="xs:nonPositiveInteger"/>
+        <xs:element name="positiveInteger" type="xs:positiveInteger"/>
         <xs:element name="unsignedInt" type="xs:unsignedInt"/>
         <xs:element name="long" type="xs:long"/>
+        <xs:element name="QName" type="xs:QName"/>
         <xs:element name="unsignedLong" type="xs:unsignedLong"/>
         <xs:element name="unsignedShort" type="xs:unsignedShort"/>
         <xs:element name="short" type="xs:short" default="2"/>
         <xs:element name="string" type="xs:string"/>
         <xs:element name="time" type="xs:time"/>
+        <xs:element name="token" type="xs:token"/>
 
         <xs:element name="idrefs" maxOccurs="unbounded">
           <xs:simpleType>
