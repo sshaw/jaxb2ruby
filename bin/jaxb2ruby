@@ -81,5 +81,5 @@ begin
     File.open(File.join(outdir, klass.path), "w") { |io| io.puts template.build(klass) }
   end
 rescue => e
-  abort "class generation failed: #{e}"
+  abort "class generation failed: #{e} \n#{'*' * 100}\nbacktrace: \n#{ e.backtrace.join("\n") }"
 end
