@@ -9,10 +9,10 @@ end
 
 task :xjc do
   schema = ENV["SCHEMA"]
-  abort "SCHEMA not set" unless schema
+  abort "SCHEMA not set" if schema.to_s.strip.empty?
 
   output = ENV["OUTPUT"] || "java-src"
   FileUtils.mkdir(output) unless File.directory?(output)
 
-  sh "xjc -extension -npa  -d #{output} #{schema} -b lib/jaxb2ruby/config.xjb"
+  sh "xjc -extension -npa -d #{output} #{schema} -b lib/jaxb2ruby/config.xjb"
 end

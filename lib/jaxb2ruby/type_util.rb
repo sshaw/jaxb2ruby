@@ -27,6 +27,7 @@ module JAXB2Ruby
     SCHEMA_TO_RUBY = {
       "ID" => :ID,
       "IDREF" => :IDREF,
+      "Name" => "String",
       "NCName" => "String",
       "NMTOKEN" => "String",
       "anySimpleType" => "Object",
@@ -50,6 +51,7 @@ module JAXB2Ruby
       "int" => "Integer",
       "integer" => "Integer",
       "long" => "Integer",
+      "language" => "String",
       "nonNegativeInteger" => "Integer",
       "nonPositiveInteger" => "Integer",
       "normalizedString" => "String",
