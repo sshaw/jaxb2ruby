@@ -45,6 +45,10 @@ parser = OptionParser.new do |opts|
     $LOAD_PATH.unshift(path)
   end
 
+  opts.on("-J", "--jvm=[ARG1[,ARG2,...]]", Array, "Options to pass to the JVM when calling XJC") do |opt|
+    (options[:jvm] ||= []).concat(opt)
+  end
+
   opts.on("-n", "--namespace=MAP1[,MAP2,...]", Array, "XML namespace to ruby class mappings", "MAP can be a string in the form namespace=class or a YAML file of namespace/class pairs") do |ns|
     options[:namespace] = mapping_option(ns)
   end
