@@ -7,12 +7,12 @@ Generate pure Ruby classes from an XML schema using [JAXB](https://en.wikipedia.
 
 ### Usage
 
-    > jaxb2ruby --help
     usage: jaxb2ruby [options] schema
         -c, --classes=MAP1[,MAP2,...]    XML Schema type to Ruby class mappings
                                          MAP can be a string in the form type=class or a YAML file of type/class pairs
         -h, --help                       Show this message
         -I, --include=DIRECTORY          Add DIRECTORY to the load path, usefull for using custom template helpers
+        -J, --jvm=[ARG1[,ARG2,...]]      Options to pass to the JVM when calling XJC
         -n, --namespace=MAP1[,MAP2,...]  XML namespace to ruby class mappings
                                          MAP can be a string in the form namespace=class or a YAML file of namespace/class pairs
         -o, --output=DIRECTORY           Directory to output the generated ruby classes, defaults to ruby
@@ -92,6 +92,8 @@ You can use helper functions in your templates by providing the helper file's di
 * Do something with org.w3c.dom.*
 * Don't treat XML Schema types as elements
 * Circular dependencies, currently can be resolved by manually adding forward declarations
+* Fix other things that surly don't work
+
 
 ### Author
 

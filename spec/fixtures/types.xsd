@@ -29,8 +29,12 @@
         <xs:element name="hexBinary" type="xs:hexBinary"/>
         <xs:element name="int" type="xs:int"/>
         <xs:element name="integer" type="xs:integer"/>
+        <xs:element name="language" type="xs:language"/>
 	<xs:element name="long" type="xs:long"/>
         <xs:element name="NCName" type="xs:NCName"/>
+        <xs:element name="Name" type="xs:Name"/>
+        <xs:element name="NMTOKEN" type="xs:NMTOKEN"/>
+        <xs:element name="normalizedString" type="xs:normalizedString"/>
         <xs:element name="nonNegativeInteger" type="xs:nonNegativeInteger"/>
         <xs:element name="nonPositiveInteger" type="xs:nonPositiveInteger"/>
         <xs:element name="positiveInteger" type="xs:positiveInteger"/>

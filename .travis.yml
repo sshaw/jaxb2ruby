@@ -8,5 +8,12 @@ jdk:
   - oraclejdk7
   - oraclejdk8
 
+matrix:
+  exclude:
+    - rvm: jruby-head
+      jdk: openjdk6
+  allow_failures:
+    - rvm: jruby-head
+
 notifications:
   email: false
