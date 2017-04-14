@@ -19,7 +19,7 @@ Generate pure Ruby classes from an XML schema using [JAXB](https://en.wikipedia.
         -t, --template=NAME              Template used to generate the ruby classes
                                          Can be a path to an ERB template or one of: roxml (default), happymapper, ruby
         -v, --version                    jaxb2ruby version
-		-w, --wsdl                       Treat the schema as a WSDL
+        -w, --wsdl                       Treat the schema as a WSDL
                                          Automatically set if the schema has a `.wsdl' extension
 
 ### Instalation
@@ -79,7 +79,7 @@ Note that "plain 'ol Ruby classes" does not perform XML serialization.
 Use the `-t` option to specify the path to your template. This *must* be a path else it will be interpreted as a [jaxb2ruby template](#Code-Templates).
 Two variables will be provided to your template:
 
-1. `@class`, an instance of `RubyClass` (http://ruby-doc.org/gems/docs/j/jaxb2ruby-0.0.1/JAXB2Ruby/RubyClass.html)
+1. `@class`, an instance of [`RubyClass`](http://www.rubydoc.info/gems/jaxb2ruby/JAXB2Ruby/RubyClass)
 2. `VERSION` the version of `jaxb2ruby`
 
 See `lib/templates` for some examples.
