@@ -1,7 +1,7 @@
 UNSUPPORTED_TYPES = [:ID, :IDREF, :boolean, "String", "Object"]
 
 def unsupported_type?(type)
-  UNSUPPORTED_TYPES.include?(type)
+  type.nil? ? true : UNSUPPORTED_TYPES.include?(type)
 end
 
 def namespace_map(klass)

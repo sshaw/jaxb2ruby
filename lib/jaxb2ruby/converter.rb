@@ -147,7 +147,7 @@ module JAXB2Ruby
 
       (element.children + element.attributes).each do |node|
         # If a node's type isn't predefined, it must be an XML mapped class
-        dependencies << node.type if !@typemap.schema_ruby_types.include?(node.type)
+        dependencies << node.type if !node.type.nil? && !@typemap.schema_ruby_types.include?(node.type)
       end
 
       RubyClass.new(type, element, dependencies, superclass)
