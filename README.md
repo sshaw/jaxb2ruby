@@ -94,6 +94,11 @@ You can use helper functions in your templates by providing the helper file's di
 * Circular dependencies, currently can be resolved by manually adding forward declarations
 * Fix other things that surly don't work
 
+### See Also
+
+* [class2](https://github.com/sshaw/class2) - easily create class
+  hierarchies that support nested attributes, type conversion,
+  equality, and more, all from a hash specification
 
 ### Author
 
