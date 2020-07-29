@@ -1,19 +1,22 @@
 language: ruby
-rvm:
-  - jruby-19mode
-  - jruby-head
-jdk:
-  - openjdk6
-  - openjdk7
-  - oraclejdk7
-  - oraclejdk8
+dist: trusty
 
-matrix:
-  exclude:
-    - rvm: jruby-head
-      jdk: openjdk6
-  allow_failures:
-    - rvm: jruby-head
+rvm:
+  - jruby-head
+
+jdk:
+  - oraclejdk9
+  - oraclejdk10
+  - oraclejdk11
+  - oraclejdk12
+  - oraclejdk13
+  - oraclejdk14
+  - openjdk9
+  - openjdk10
+  - openjdk11
+  - openjdk12
+  - openjdk13
+  - openjdk14
 
 notifications:
   email: false
