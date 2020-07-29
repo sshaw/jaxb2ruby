@@ -16,7 +16,7 @@ module JAXB2Ruby
 
     def initialize(schema, options = {})
       raise ArgumentError, "cannot access schema: #{schema}" unless File.file?(schema) and File.readable?(schema)
-      @xjc = XJC.new(schema, :wsdl => !!options[:wsdl], :jvm => options[:jvm])
+      @xjc = XJC.new(schema, :xjc => options[:xjc], :wsdl => !!options[:wsdl], :jvm => options[:jvm])
 
       @namespace = options[:namespace] || {}
       raise ArgumentError, "namespace mapping must be a Hash" unless @namespace.is_a?(Hash)
@@ -72,7 +72,7 @@ module JAXB2Ruby
     end
 
     def find_namespace(klass)
-      annot = klass.annotation(javax.xml.bind.annotation.XmlRootElement.java_class) || klass.annotation(javax.xml.bind.annotation.XmlType.java_class)
+      annot = klass.get_annotation(javax.xml.bind.annotation.XmlRootElement.java_class) || klass.get_annotation(javax.xml.bind.annotation.XmlType.java_class)
       return unless annot
 
       # if klass is an inner class the namespace will be on the outter class (enclosing_class).

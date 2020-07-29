@@ -21,12 +21,20 @@ Generate pure Ruby classes from an XML schema using [JAXB](https://en.wikipedia.
         -v, --version                    jaxb2ruby version
         -w, --wsdl                       Treat the schema as a WSDL
                                          Automatically set if the schema has a `.wsdl' extension
+        -x, --xjc=PATH                   Path to the XJC executable to use; defaults to xjc
 
 ### Instalation
 
     gem install jaxb2ruby
 
 `jaxb2ruby` must be installed and ran under JRuby. The generated classes *will not* depend on JRuby.
+
+If your underlying JDK version is >= 9 you must use JRuby >= 9.2.12.0.
+
+If your underlying JDK version is >= 11, you must [manually install JAXB](https://github.com/eclipse-ee4j/jaxb-ri).
+In this case you'll likely run `jaxb2ruby` using the following (on *nix):
+
+    CLASSPATH=path/to/jaxb-ri/mod/jakarta.xml.bind-api.jar jaxb2ruby -x path/to/xjc.sh schema.xsd
 
 ### Ruby Class Mappings
 
@@ -92,7 +100,7 @@ You can use helper functions in your templates by providing the helper file's di
 * Do something with org.w3c.dom.*
 * Don't treat XML Schema types as elements
 * Circular dependencies, currently can be resolved by manually adding forward declarations
-* Fix other things that surly don't work
+* Fix other things that surely don't work
 
 ### See Also
 

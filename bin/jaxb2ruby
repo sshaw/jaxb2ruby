@@ -69,6 +69,10 @@ parser = OptionParser.new do |opts|
   opts.on("-w", "--wsdl", "Treat the schema as a WSDL", "Automatically set if the schema has a `.wsdl' extension") do
     options[:wsdl] = true
   end
+
+  opts.on("-x", "--xjc=PATH", "Path to the XJC executable to use; defaults to xjc") do |path|
+    options[:xjc] = path
+  end
 end
 
 parser.parse!

@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.version     = JAXB2Ruby::VERSION
   s.date        = Date.today
   s.platform    = "java"
-  s.required_ruby_version = "< 2.0"
+  s.required_ruby_version = "> 1.9"
   s.summary     = "Generate pure Ruby classes from an XML schema using JAXB and JRuby"
   s.description =<<-DESC
     jaxb2ruby generates Java XML mappings via xjc, reads the resulting annotations, and passes the
@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   s.homepage    = "http://github.com/sshaw/jaxb2ruby"
   s.license     = "MIT"
 
-  s.add_dependency "activesupport", ">= 3.2"
-  s.add_dependency "cocaine", "~> 0.5.4"
-  s.add_development_dependency "rake", "~> 10.0"
+  s.add_dependency "activesupport", ">= 3.2", "< 7"
+  s.add_dependency "cocaine", "0.5.8"
+  s.add_development_dependency "rake", "~> 13.0"
 end
