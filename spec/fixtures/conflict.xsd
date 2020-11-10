@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" >
+	<xs:element name="A">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Value"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="B">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="value"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="Value">
+		<xs:simpleType>
+			<xs:restriction base="xs:string"/>
+		</xs:simpleType>
+	</xs:element>
+	<xs:element name="value">
+		<xs:simpleType>
+			<xs:restriction base="xs:float"/>
+		</xs:simpleType>
+	</xs:element>
+</xs:schema>

@@ -32,6 +32,10 @@ options = {}
 parser = OptionParser.new do |opts|
   opts.banner = "usage: #{File.basename($0)} [options] schema"
 
+  opts.on("-b", "--binding=FILE", "specify external bindings files (xjb). Each FILE must have its own -b.") do |opt|
+    (options[:bindings] ||= []).push(opt)
+  end
+
   opts.on("-c", "--classes=MAP1[,MAP2,...]", Array, "XML Schema type to Ruby class mappings", "MAP can be a string in the form type=class or a YAML file of type/class pairs") do |typemap|
     options[:typemap] = mapping_option(typemap)
   end

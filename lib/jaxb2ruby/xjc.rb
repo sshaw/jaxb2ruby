@@ -32,7 +32,8 @@ module JAXB2Ruby
 
     def xjc
       options = @schema.end_with?(".wsdl") || @options[:wsdl] ? "-wsdl " : ""
-      options << "-extension -npa -d :sources :schema -b :config"
+      bindings = (@options[:bindings] || []).map { |binding| "-b #{binding}"}.join(" ")
+      options << "-extension -npa -d :sources :schema -b :config #{bindings}"
       options << @options[:jvm].map { |opt| " -J#{opt}" }.join(" ") if @options[:jvm]
 
       line = Cocaine::CommandLine.new(@options[:xjc] || "xjc", options)
