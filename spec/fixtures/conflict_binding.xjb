@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<jxb:bindings xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" version="2.1">
+  <jxb:bindings schemaLocation="conflict.xsd">
+    <jxb:bindings node="//xs:element[@name='value']">
+      <jxb:factoryMethod name="MyName"/>
+    </jxb:bindings>
+  </jxb:bindings>
+</jxb:bindings>

@@ -2,6 +2,29 @@ require "spec_helper"
 require "jaxb2ruby/type_util"
 
 describe JAXB2Ruby::Converter do
+  it "errors when there elements with names causing a collision" do
+    assert_raises do
+      convert("conflict")
+    end
+  end
+
+  it "optionally accepts xjb files for binding" do
+    path = File.expand_path("../fixtures/conflict_binding.xjb", __FILE__)
+    hash = class_hash(convert("conflict", bindings: [path]))
+
+    _(hash["A"]).must_be_instance_of(JAXB2Ruby::RubyClass)
+    element_a = hash['A'].element.children.first
+    _(element_a).must_be_instance_of(JAXB2Ruby::Element)
+    _(element_a.accessor).must_equal('value')
+    _(element_a.type).must_equal('String')
+
+    _(hash["B"]).must_be_instance_of(JAXB2Ruby::RubyClass)
+    element_b = hash['B'].element.children.first
+    _(element_b).must_be_instance_of(JAXB2Ruby::Element)
+    _(element_b.accessor).must_equal('value')
+    _(element_b.type).must_equal('Float')
+  end
+
   it "creates ruby classes" do
     classes = convert("address")
     classes.size.must_equal(2)
