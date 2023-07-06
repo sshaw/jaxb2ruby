@@ -83,7 +83,7 @@ module JAXB2Ruby
 
     def translate_type(klass)
       # Won't work for extract_class() as it expects an instance but this should be split anyways
-      return "Object" if klass.java_kind_of?(java.lang.reflect.WildcardType)
+      return "Object" if klass.kind_of?(java.lang.reflect.WildcardType)
 
       type = @typemap.java2ruby(klass.name)
       return type if type
@@ -107,12 +107,12 @@ module JAXB2Ruby
         resolved_type = []
         type = field.generic_type
 
-        if type.java_kind_of?(java.lang.reflect.ParameterizedType)
+        if type.kind_of?(java.lang.reflect.ParameterizedType)
           type = type.actual_type_arguments.first
 
-          if type.java_kind_of?(java.lang.reflect.ParameterizedType)
+          if type.kind_of?(java.lang.reflect.ParameterizedType)
             resolved_type << translate_type(type.actual_type_arguments.first)
-          # elsif type.java_kind_of?(java.lang.reflect.WildcardType)
+          # elsif type.kind_of?(java.lang.reflect.WildcardType)
           #   type.get_upper_bounds.each do |lower|
           #   end
           #   type.get_lower_bounds.each do |upper|
