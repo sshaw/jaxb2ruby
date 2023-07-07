@@ -19,7 +19,7 @@ HEAD
     def initialize(name = nil)
       # If it's not a named template assume it's a path
       path = PATHS[name] || name || DEFAULT
-      @__erb = ERB.new(HEADING + File.read(path), nil, "<>%-")
+      @__erb = ERB.new(HEADING + File.read(path), nil, "-")
     rescue => e
       raise Error, "cannot load class template: #{e}"
     end
