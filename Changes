@@ -1,0 +1,8 @@
+2023-07-08  v0.1.0
+--------------------
+* Fix ERB trim mode warning
+* Remove version and timestamp from auto-generated output file statement (Thanks John Weir PR #7)
+* Require JRuby >= 9.3 (Ruby >= 2.6)
+* Add option to define custom xjb binding files (Thanks John Weir PR #8)
+* Add stacktrace to jaxb2ruby executable output
+* Add support for modern JVMs
