@@ -22,7 +22,7 @@ module JAXB2Ruby
       "java.lang.Long" => "long",
       "long" => "long",
       "short" => "short"
-    }
+    }.freeze
 
     SCHEMA_TO_RUBY = {
       "ID" => :ID,
@@ -37,7 +37,7 @@ module JAXB2Ruby
       "boolean" => :boolean,
       "byte" => "Integer",
       "date" => "Date",
-      "dateTime" => "DateTime",
+      "dateTime" => "Time",
       "decimal" => "Float",  # BigDecimal
       "double" => "Float",
       "duration" => "String",
@@ -65,7 +65,7 @@ module JAXB2Ruby
       "unsignedInt" => "Integer",
       "unsignedLong" => "Integer",
       "unsignedShort" => "Integer"
-    }
+    }.freeze
 
     def initialize(schema2ruby)
       @schema2ruby = SCHEMA_TO_RUBY.merge(schema2ruby || {})
