@@ -71,12 +71,13 @@ module JAXB2Ruby
       @schema2ruby = SCHEMA_TO_RUBY.merge(schema2ruby || {})
     end
 
-    def schema_ruby_types
-      @schema_types ||= SCHEMA_TO_RUBY.values.uniq
-    end
-
     def java2schema(klass)
       JAVA_TO_SCHEMA[klass]
+    end
+
+    def core_ruby_type?(type)
+      @schema_types ||= SCHEMA_TO_RUBY.values.uniq - %w[Date]
+      @schema_types.include?(type)
     end
 
     def schema2ruby(type)
